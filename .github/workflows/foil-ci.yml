@@ -35,11 +35,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Fetch Databricks CLI
-        run: yarn run package:cli:fetch
-        working-directory: packages/databricks-vscode
-        env:
-          GH_TOKEN: ${{ github.token }}
 
       - name: Lint and formatting
         run: yarn run test:lint
