@@ -26,6 +26,13 @@ export interface FoilMachineConfig {
     modelVersion: string;
     description?: string;
     parameters?: Record<string, unknown>;
+    control?: {
+        sourceRepo: string;
+        controlMachineId: string;
+        revision: string;
+        importedAt: string;
+        snapshotPath?: string;
+    };
 }
 
 export interface FoilCampaignConfig {
