@@ -1,5 +1,5 @@
 import {Disposable, RelativePattern, workspace} from "vscode";
-import {mkdir, rm, writeFile} from "node:fs/promises";
+import {mkdir, readFile, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -91,6 +91,66 @@ export class FoilLabManager implements Disposable {
             this.writeTextIfMissing(path.join(root, ".gitignore"), "build/\n"),
         ]);
         await this.model.refresh();
+    }
+
+    async importControlMachineSnapshot(snapshotPath: string): Promise<string> {
+        const root = this.model.labRootPath;
+        if (root === undefined) {
+            throw new Error("Initialize the FOIL Lab before importing a control snapshot.");
+        }
+
+        const raw = JSON.parse(await readFile(snapshotPath, "utf8")) as {
+            schema?: string;
+            sourceRepo?: string;
+            machineId?: string;
+            technology?: string;
+            status?: string;
+            machineRevision?: string;
+            referenceFacts?: unknown[];
+            simulationParameters?: string[];
+            unresolvedEngineering?: string[];
+            rules?: string[];
+        };
+        if (
+            raw.schema !== "foil-control/databricks-machine-snapshot-v1" ||
+            raw.machineId === undefined ||
+            raw.machineRevision === undefined ||
+            raw.sourceRepo === undefined
+        ) {
+            throw new Error("Selected JSON is not a valid FOIL control Databricks machine snapshot.");
+        }
+        if (raw.technology !== "EOLIEN") {
+            throw new Error("The MVP importer accepts the active EOLIEN control machine only.");
+        }
+
+        const machine = {
+            machineId: "eolien_lab_v1",
+            technology: "EOLIEN",
+            status: "ACTIVE",
+            classification: "SYNTHETIC",
+            modelVersion: `control-${raw.machineRevision}`,
+            description:
+                "Active wind profile imported from the FOIL company control repository. Scenario values remain synthetic until approved evidence updates the control source.",
+            control: {
+                sourceRepo: raw.sourceRepo,
+                controlMachineId: raw.machineId,
+                revision: raw.machineRevision,
+                importedAt: new Date().toISOString(),
+                snapshotPath,
+            },
+            parameters: {
+                referenceFacts: raw.referenceFacts ?? [],
+                simulationParameterIds: raw.simulationParameters ?? [],
+                unresolvedEngineering: raw.unresolvedEngineering ?? [],
+                controlRules: raw.rules ?? [],
+            },
+        };
+
+        const target = path.join(root, "machines", "eolien_lab_v1.json");
+        await mkdir(path.dirname(target), {recursive: true});
+        await writeFile(target, `${JSON.stringify(machine, null, 4)}\n`, "utf8");
+        await this.model.refresh();
+        return target;
     }
 
     async createCampaign(campaignId: string): Promise<string> {
