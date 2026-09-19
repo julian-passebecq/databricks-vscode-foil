@@ -19,3 +19,7 @@ The Free/Demo scaffold defaults to `SYNTHETIC` and keeps arbitrary real-data ing
 The current MVP establishes the editor contract, navigation, validation, deployment wrappers, deterministic campaign compilation, a reproducible Gold scenario matrix, and a bundle-managed read-only Streamlit App. Every campaign expands its test configuration into stable scenario IDs in `campaign_scenarios` plus long-form `scenario_parameters`; future physics, statistics, optimization, and ML modules should consume those scenario IDs instead of generating their own incompatible grids.
 
 The next layers are live Free Edition capability probes, richer Gold query/result panels, AI/BI dashboard compilation, and validated model/analysis modules that attach results back to the scenario contract.
+
+## Gold query contract
+
+Compiled campaigns also emit a read-only query pack under `.foil-lab/build/<campaign>/queries/`. The catalog records dataset grain and relationships while the SQL files provide standard campaign, scenario, parameter, and design-statistics queries. Streamlit, AI/BI generation, VS Code result panels, and external AI handoffs should reuse this contract instead of inventing independent joins.

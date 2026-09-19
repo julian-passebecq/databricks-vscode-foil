@@ -10,6 +10,7 @@ import {
     buildDescriptiveStatisticsRunner,
     isAnalysisEnabled,
 } from "./analysisModules";
+import {buildQueryArtifacts} from "./queryCatalog";
 
 export interface FoilCompiledArtifact {
     relativePath: string;
@@ -502,6 +503,7 @@ export function compileCampaign(
         },
     };
 
+    const queryArtifacts = buildQueryArtifacts(project, campaign);
     const artifacts: FoilCompiledArtifact[] = [
         {
             relativePath: "manifest.json",
@@ -532,6 +534,8 @@ export function compileCampaign(
             content: `include:\n  - .foil-lab/build/${campaign.campaignId}/resources/campaign.job.yml\n`,
         },
     ];
+
+    artifacts.push(...queryArtifacts);
 
     if (descriptiveStatistics !== undefined) {
         artifacts.push({

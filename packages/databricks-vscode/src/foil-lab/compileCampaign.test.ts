@@ -95,6 +95,15 @@ describe("compileCampaign", () => {
         assert.ok(dashboard?.content.includes("campaign_scenarios"));
         assert.ok(dashboard?.content.includes("scenario_parameters"));
         assert.ok(appPage?.content.includes("scenario_matrix"));
+
+        const queryCatalog = plan.artifacts.find(
+            (artifact) => artifact.relativePath === "queries/catalog.json"
+        );
+        const scenarioQuery = plan.artifacts.find(
+            (artifact) => artifact.relativePath === "queries/scenario_matrix.sql"
+        );
+        assert.ok(queryCatalog?.content.includes('"sourceLayer": "GOLD"'));
+        assert.ok(scenarioQuery?.content.includes(":campaign_id"));
     });
 
     it("changes the source hash when the campaign changes", () => {
