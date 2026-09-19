@@ -33,10 +33,7 @@
             "const": "STREAMLIT"
         },
         "deployment": {
-            "enum": [
-                "DATABRICKS_APP",
-                "EXTERNAL"
-            ]
+            "enum": ["DATABRICKS_APP", "EXTERNAL"]
         },
         "catalog": {
             "type": "string"

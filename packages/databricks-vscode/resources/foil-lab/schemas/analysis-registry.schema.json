@@ -3,10 +3,7 @@
     "$id": "https://foil.local/schemas/analysis-registry.schema.json",
     "title": "FOIL Analysis Module Registry",
     "type": "object",
-    "required": [
-        "version",
-        "modules"
-    ],
+    "required": ["version", "modules"],
     "properties": {
         "version": {
             "type": "string",
@@ -16,21 +13,14 @@
             "type": "array",
             "items": {
                 "type": "object",
-                "required": [
-                    "id",
-                    "status"
-                ],
+                "required": ["id", "status"],
                 "properties": {
                     "id": {
                         "type": "string",
                         "minLength": 1
                     },
                     "status": {
-                        "enum": [
-                            "READY",
-                            "PLANNED",
-                            "DISABLED"
-                        ]
+                        "enum": ["READY", "PLANNED", "DISABLED"]
                     },
                     "entrypoint": {
                         "type": "string"

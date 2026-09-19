@@ -79,9 +79,7 @@ describe("compileCampaign", () => {
         assert.ok(job?.content.includes("task_key: descriptive_statistics"));
         assert.ok(job?.content.includes("depends_on:"));
         assert.ok(statistics?.content.includes("campaign_design_statistics"));
-        assert.ok(
-            statistics?.content.includes("EXPERIMENT_DESIGN_PARAMETERS")
-        );
+        assert.ok(statistics?.content.includes("EXPERIMENT_DESIGN_PARAMETERS"));
     });
 
     it("changes the source hash when the campaign changes", () => {

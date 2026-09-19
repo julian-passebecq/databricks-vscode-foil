@@ -46,7 +46,9 @@ export class FoilLabManager implements Disposable {
     async initializeProject(): Promise<void> {
         const root = this.model.labRootPath;
         if (root === undefined) {
-            throw new Error("Open or select a Databricks project folder first.");
+            throw new Error(
+                "Open or select a Databricks project folder first."
+            );
         }
 
         await Promise.all([
@@ -58,7 +60,10 @@ export class FoilLabManager implements Disposable {
         ]);
 
         await Promise.all([
-            this.writeJsonIfMissing(path.join(root, "project.json"), PROJECT_CONFIG),
+            this.writeJsonIfMissing(
+                path.join(root, "project.json"),
+                PROJECT_CONFIG
+            ),
             this.writeJsonIfMissing(
                 path.join(root, "machines", "eolien_lab_v1.json"),
                 EOLIEN_MACHINE
@@ -68,14 +73,21 @@ export class FoilLabManager implements Disposable {
                 HYDRO_REFERENCE_MACHINE
             ),
             this.writeJsonIfMissing(
-                path.join(root, "campaigns", "wind_parameter_sweep_example.json"),
+                path.join(
+                    root,
+                    "campaigns",
+                    "wind_parameter_sweep_example.json"
+                ),
                 EXAMPLE_CAMPAIGN
             ),
             this.writeJsonIfMissing(
                 path.join(root, "analysis-modules", "registry.json"),
                 ANALYSIS_REGISTRY
             ),
-            this.writeJsonIfMissing(path.join(root, "ui", "app.json"), APP_SPEC),
+            this.writeJsonIfMissing(
+                path.join(root, "ui", "app.json"),
+                APP_SPEC
+            ),
             this.writeTextIfMissing(path.join(root, ".gitignore"), "build/\n"),
         ]);
         await this.model.refresh();
@@ -84,12 +96,16 @@ export class FoilLabManager implements Disposable {
     async createCampaign(campaignId: string): Promise<string> {
         const root = this.model.labRootPath;
         if (root === undefined) {
-            throw new Error("Open or select a Databricks project folder first.");
+            throw new Error(
+                "Open or select a Databricks project folder first."
+            );
         }
 
         const normalizedId = campaignId.trim().replace(/[^a-zA-Z0-9_-]+/g, "_");
         if (normalizedId.length === 0) {
-            throw new Error("Campaign id must contain at least one valid character.");
+            throw new Error(
+                "Campaign id must contain at least one valid character."
+            );
         }
 
         const filePath = path.join(root, "campaigns", `${normalizedId}.json`);
@@ -132,7 +148,9 @@ export class FoilLabManager implements Disposable {
         );
 
         if (root === undefined || project === undefined) {
-            throw new Error("Initialize the FOIL Lab before compiling a campaign.");
+            throw new Error(
+                "Initialize the FOIL Lab before compiling a campaign."
+            );
         }
         if (campaign?.config === undefined) {
             throw new Error(
@@ -225,11 +243,7 @@ export class FoilLabManager implements Disposable {
         const root = this.model.labRootPath;
         const app = this.model.state.app;
         const project = this.model.state.project;
-        if (
-            root === undefined ||
-            app === undefined ||
-            project === undefined
-        ) {
+        if (root === undefined || app === undefined || project === undefined) {
             throw new Error(
                 "Initialize and configure the FOIL Lab before generating the App."
             );
@@ -305,14 +319,10 @@ export class FoilLabManager implements Disposable {
         value: unknown
     ): Promise<void> {
         try {
-            await writeFile(
-                filePath,
-                `${JSON.stringify(value, null, 4)}\n`,
-                {
-                    encoding: "utf8",
-                    flag: "wx",
-                }
-            );
+            await writeFile(filePath, `${JSON.stringify(value, null, 4)}\n`, {
+                encoding: "utf8",
+                flag: "wx",
+            });
         } catch (e) {
             if ((e as NodeJS.ErrnoException).code !== "EEXIST") {
                 throw e;

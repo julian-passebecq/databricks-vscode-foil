@@ -26,9 +26,12 @@ const EMPTY_STATE: FoilLabState = {
 export class FoilLabModel {
     private _state: FoilLabState = EMPTY_STATE;
     private readonly _onDidChangeState = new EventEmitter<FoilLabState>();
-    readonly onDidChangeState: Event<FoilLabState> = this._onDidChangeState.event;
+    readonly onDidChangeState: Event<FoilLabState> =
+        this._onDidChangeState.event;
 
-    constructor(private readonly workspaceFolderManager: WorkspaceFolderManager) {}
+    constructor(
+        private readonly workspaceFolderManager: WorkspaceFolderManager
+    ) {}
 
     get state(): FoilLabState {
         return this._state;
@@ -52,7 +55,9 @@ export class FoilLabModel {
 
     get appSpecPath(): string | undefined {
         const root = this.labRootPath;
-        return root === undefined ? undefined : path.join(root, "ui", "app.json");
+        return root === undefined
+            ? undefined
+            : path.join(root, "ui", "app.json");
     }
 
     async refresh(): Promise<FoilLabState> {
@@ -111,8 +116,7 @@ export class FoilLabModel {
             app.issues.push({
                 severity: "warning",
                 path: "goldSchema",
-                message:
-                    "App goldSchema differs from the project Gold schema.",
+                message: "App goldSchema differs from the project Gold schema.",
             });
         }
 

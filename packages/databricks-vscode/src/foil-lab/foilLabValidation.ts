@@ -7,38 +7,21 @@ import type {
 } from "./FoilLabTypes";
 
 const TECHNOLOGIES = new Set(["EOLIEN", "HYDROLIEN", "PROPULSION"]);
-const MACHINE_STATUSES = new Set([
-    "ACTIVE",
-    "REFERENCE_ONLY",
-    "EXPERIMENTAL",
-]);
-const CLASSIFICATIONS = new Set([
-    "SYNTHETIC",
-    "SANITIZED_APPROVED",
-]);
+const MACHINE_STATUSES = new Set(["ACTIVE", "REFERENCE_ONLY", "EXPERIMENTAL"]);
+const CLASSIFICATIONS = new Set(["SYNTHETIC", "SANITIZED_APPROVED"]);
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 const SAFE_SCHEMA = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const SAFE_APP_NAME = /^[a-z0-9][a-z0-9-]*$/;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-    return (
-        typeof value === "object" &&
-        value !== null &&
-        !Array.isArray(value)
-    );
+    return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function error(
-    path: string,
-    message: string
-): FoilLabValidationIssue {
+function error(path: string, message: string): FoilLabValidationIssue {
     return {severity: "error", path, message};
 }
 
-function warning(
-    path: string,
-    message: string
-): FoilLabValidationIssue {
+function warning(path: string, message: string): FoilLabValidationIssue {
     return {severity: "warning", path, message};
 }
 
@@ -65,43 +48,23 @@ export function validateProjectConfig(value: unknown): {
     if (!isRecord(value)) {
         return {
             issues: [
-                error(
-                    "project",
-                    "Project configuration must be an object."
-                ),
+                error("project", "Project configuration must be an object."),
             ],
         };
     }
 
-    if (
-        typeof value.version !== "string" ||
-        value.version.length === 0
-    ) {
-        issues.push(
-            error("version", "A non-empty version is required.")
-        );
+    if (typeof value.version !== "string" || value.version.length === 0) {
+        issues.push(error("version", "A non-empty version is required."));
     }
-    if (
-        typeof value.name !== "string" ||
-        value.name.length === 0
-    ) {
-        issues.push(
-            error("name", "A non-empty project name is required.")
-        );
+    if (typeof value.name !== "string" || value.name.length === 0) {
+        issues.push(error("name", "A non-empty project name is required."));
     }
     if (!TECHNOLOGIES.has(String(value.activeTechnology))) {
         issues.push(
-            error(
-                "activeTechnology",
-                "Unknown Foil technology branch."
-            )
+            error("activeTechnology", "Unknown Foil technology branch.")
         );
     }
-    if (
-        !CLASSIFICATIONS.has(
-            String(value.defaultClassification)
-        )
-    ) {
+    if (!CLASSIFICATIONS.has(String(value.defaultClassification))) {
         issues.push(
             error(
                 "defaultClassification",
@@ -118,23 +81,10 @@ export function validateProjectConfig(value: unknown): {
         );
     }
     if (!isRecord(value.databricks)) {
-        issues.push(
-            error(
-                "databricks",
-                "Databricks settings are required."
-            )
-        );
+        issues.push(error("databricks", "Databricks settings are required."));
     } else {
-        validateSafeId(
-            value.databricks.target,
-            "databricks.target",
-            issues
-        );
-        validateSafeId(
-            value.databricks.labJob,
-            "databricks.labJob",
-            issues
-        );
+        validateSafeId(value.databricks.target, "databricks.target", issues);
+        validateSafeId(value.databricks.labJob, "databricks.labJob", issues);
         validateSafeId(
             value.databricks.appResource,
             "databricks.appResource",
@@ -153,9 +103,7 @@ export function validateProjectConfig(value: unknown): {
         }
     }
 
-    if (
-        issues.some((issue) => issue.severity === "error")
-    ) {
+    if (issues.some((issue) => issue.severity === "error")) {
         return {issues};
     }
     return {
@@ -172,37 +120,22 @@ export function validateMachineConfig(value: unknown): {
     if (!isRecord(value)) {
         return {
             issues: [
-                error(
-                    "machine",
-                    "Machine configuration must be an object."
-                ),
+                error("machine", "Machine configuration must be an object."),
             ],
         };
     }
 
     validateSafeId(value.machineId, "machineId", issues);
     if (!TECHNOLOGIES.has(String(value.technology))) {
-        issues.push(
-            error("technology", "Unknown Foil technology branch.")
-        );
+        issues.push(error("technology", "Unknown Foil technology branch."));
     }
     if (!MACHINE_STATUSES.has(String(value.status))) {
         issues.push(error("status", "Unknown machine status."));
     }
-    if (
-        !CLASSIFICATIONS.has(String(value.classification))
-    ) {
-        issues.push(
-            error(
-                "classification",
-                "Unknown data classification."
-            )
-        );
+    if (!CLASSIFICATIONS.has(String(value.classification))) {
+        issues.push(error("classification", "Unknown data classification."));
     }
-    if (
-        typeof value.modelVersion !== "string" ||
-        value.modelVersion === ""
-    ) {
+    if (typeof value.modelVersion !== "string" || value.modelVersion === "") {
         issues.push(
             error(
                 "modelVersion",
@@ -210,21 +143,12 @@ export function validateMachineConfig(value: unknown): {
             )
         );
     }
-    if (
-        value.parameters !== undefined &&
-        !isRecord(value.parameters)
-    ) {
+    if (value.parameters !== undefined && !isRecord(value.parameters)) {
         issues.push(
-            error(
-                "parameters",
-                "Machine parameters must be a JSON object."
-            )
+            error("parameters", "Machine parameters must be a JSON object.")
         );
     }
-    if (
-        value.technology === "HYDROLIEN" &&
-        value.status === "ACTIVE"
-    ) {
+    if (value.technology === "HYDROLIEN" && value.status === "ACTIVE") {
         issues.push(
             warning(
                 "status",
@@ -233,9 +157,7 @@ export function validateMachineConfig(value: unknown): {
         );
     }
 
-    if (
-        issues.some((issue) => issue.severity === "error")
-    ) {
+    if (issues.some((issue) => issue.severity === "error")) {
         return {issues};
     }
     return {
@@ -252,62 +174,32 @@ export function validateCampaignConfig(value: unknown): {
     if (!isRecord(value)) {
         return {
             issues: [
-                error(
-                    "campaign",
-                    "Campaign configuration must be an object."
-                ),
+                error("campaign", "Campaign configuration must be an object."),
             ],
         };
     }
 
     validateSafeId(value.campaignId, "campaignId", issues);
     validateSafeId(value.machineId, "machineId", issues);
-    if (
-        typeof value.objective !== "string" ||
-        value.objective.trim() === ""
-    ) {
+    if (typeof value.objective !== "string" || value.objective.trim() === "") {
         issues.push(
-            error(
-                "objective",
-                "A non-empty experiment objective is required."
-            )
+            error("objective", "A non-empty experiment objective is required.")
         );
     }
     if (!TECHNOLOGIES.has(String(value.technology))) {
+        issues.push(error("technology", "Unknown Foil technology branch."));
+    }
+    if (!CLASSIFICATIONS.has(String(value.classification))) {
+        issues.push(error("classification", "Unknown data classification."));
+    }
+    if (value.test !== undefined && !isRecord(value.test)) {
         issues.push(
-            error("technology", "Unknown Foil technology branch.")
+            error("test", "Campaign test configuration must be a JSON object.")
         );
     }
-    if (
-        !CLASSIFICATIONS.has(String(value.classification))
-    ) {
+    if (!Array.isArray(value.analyses) || value.analyses.length === 0) {
         issues.push(
-            error(
-                "classification",
-                "Unknown data classification."
-            )
-        );
-    }
-    if (
-        value.test !== undefined &&
-        !isRecord(value.test)
-    ) {
-        issues.push(
-            error(
-                "test",
-                "Campaign test configuration must be a JSON object."
-            )
-        );
-    }
-    if (
-        !Array.isArray(value.analyses) ||
-        value.analyses.length === 0
-    ) {
-        issues.push(
-            error(
-                "analyses",
-                "At least one analysis module is required."
-            )
+            error("analyses", "At least one analysis module is required.")
         );
     } else {
         value.analyses.forEach((analysis, index) => {
@@ -338,9 +230,7 @@ export function validateCampaignConfig(value: unknown): {
         });
     }
 
-    if (
-        issues.some((issue) => issue.severity === "error")
-    ) {
+    if (issues.some((issue) => issue.severity === "error")) {
         return {issues};
     }
     return {
@@ -349,7 +239,6 @@ export function validateCampaignConfig(value: unknown): {
     };
 }
 
-
 export function validateAppConfig(value: unknown): {
     config?: FoilAppConfig;
     issues: FoilLabValidationIssue[];
@@ -357,12 +246,7 @@ export function validateAppConfig(value: unknown): {
     const issues: FoilLabValidationIssue[] = [];
     if (!isRecord(value)) {
         return {
-            issues: [
-                error(
-                    "app",
-                    "App configuration must be an object."
-                ),
-            ],
+            issues: [error("app", "App configuration must be an object.")],
         };
     }
 
@@ -409,9 +293,7 @@ export function validateAppConfig(value: unknown): {
         );
     }
     if (typeof value.catalog !== "string") {
-        issues.push(
-            error("catalog", "catalog must be a string.")
-        );
+        issues.push(error("catalog", "catalog must be a string."));
     } else if (value.catalog === "") {
         issues.push(
             warning(
@@ -429,10 +311,7 @@ export function validateAppConfig(value: unknown): {
     }
     if (typeof value.sqlWarehouseId !== "string") {
         issues.push(
-            error(
-                "sqlWarehouseId",
-                "sqlWarehouseId must be a string."
-            )
+            error("sqlWarehouseId", "sqlWarehouseId must be a string.")
         );
     } else if (value.sqlWarehouseId === "") {
         issues.push(
@@ -472,16 +351,11 @@ export function validateAppConfig(value: unknown): {
         )
     ) {
         issues.push(
-            error(
-                "pages",
-                "pages must be an array of non-empty strings."
-            )
+            error("pages", "pages must be an array of non-empty strings.")
         );
     }
 
-    if (
-        issues.some((issue) => issue.severity === "error")
-    ) {
+    if (issues.some((issue) => issue.severity === "error")) {
         return {issues};
     }
     return {

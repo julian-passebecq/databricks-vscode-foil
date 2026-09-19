@@ -24,10 +24,7 @@ function fullTable(config: FoilAppConfig, table: string): string {
     return `${config.catalog}.${config.goldSchema}.${table}`;
 }
 
-function buildBundleResource(
-    config: FoilAppConfig,
-    tables: string[]
-): string {
+function buildBundleResource(config: FoilAppConfig, tables: string[]): string {
     const tableResources = tables
         .map(
             (table) => `        - name: ${table.replace(/_/g, "-")}
@@ -207,13 +204,19 @@ with data_tab:
 
 export function compileApp(config: FoilAppConfig): FoilAppCompilationPlan {
     if (!SAFE_RESOURCE.test(config.appId)) {
-        throw new Error("App resource key is not safe for a Databricks bundle.");
+        throw new Error(
+            "App resource key is not safe for a Databricks bundle."
+        );
     }
     if (!SAFE_APP_NAME.test(config.appName)) {
-        throw new Error("Databricks App name must be lowercase alphanumeric/hyphen.");
+        throw new Error(
+            "Databricks App name must be lowercase alphanumeric/hyphen."
+        );
     }
     if (!SAFE_IDENTIFIER.test(config.catalog)) {
-        throw new Error("Configure a simple Unity Catalog catalog identifier first.");
+        throw new Error(
+            "Configure a simple Unity Catalog catalog identifier first."
+        );
     }
     if (!SAFE_IDENTIFIER.test(config.goldSchema)) {
         throw new Error("Gold schema is not a safe Unity Catalog identifier.");
@@ -222,7 +225,9 @@ export function compileApp(config: FoilAppConfig): FoilAppCompilationPlan {
         throw new Error("Configure a valid SQL warehouse ID first.");
     }
     if (config.readOnly !== true) {
-        throw new Error("The current FOIL App compiler supports read-only mode only.");
+        throw new Error(
+            "The current FOIL App compiler supports read-only mode only."
+        );
     }
 
     const requiredGoldTables = [

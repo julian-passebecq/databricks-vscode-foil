@@ -17,21 +17,14 @@
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
         },
         "technology": {
-            "enum": [
-                "EOLIEN",
-                "HYDROLIEN",
-                "PROPULSION"
-            ]
+            "enum": ["EOLIEN", "HYDROLIEN", "PROPULSION"]
         },
         "machineId": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
         },
         "classification": {
-            "enum": [
-                "SYNTHETIC",
-                "SANITIZED_APPROVED"
-            ]
+            "enum": ["SYNTHETIC", "SANITIZED_APPROVED"]
         },
         "objective": {
             "type": "string",
@@ -46,9 +39,7 @@
             "minItems": 1,
             "items": {
                 "type": "object",
-                "required": [
-                    "module"
-                ],
+                "required": ["module"],
                 "properties": {
                     "module": {
                         "type": "string",

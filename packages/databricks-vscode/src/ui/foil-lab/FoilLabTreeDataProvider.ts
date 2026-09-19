@@ -47,9 +47,7 @@ export class FoilLabTreeDataProvider
         return element;
     }
 
-    async getChildren(
-        parent?: FoilLabTreeNode
-    ): Promise<FoilLabTreeNode[]> {
+    async getChildren(parent?: FoilLabTreeNode): Promise<FoilLabTreeNode[]> {
         if (!parent) {
             return this.getRootNodes();
         }
@@ -82,7 +80,9 @@ export class FoilLabTreeDataProvider
             "beaker"
         );
         project.description = state.initialized
-            ? `${state.project?.activeTechnology ?? "?"} · ${state.project?.defaultClassification ?? "?"}`
+            ? `${state.project?.activeTechnology ?? "?"} · ${
+                  state.project?.defaultClassification ?? "?"
+              }`
             : "not initialized";
 
         return [
@@ -144,7 +144,9 @@ export class FoilLabTreeDataProvider
                 "database"
             ),
             this.action(
-                `App: ${state.project?.databricks.appResource ?? "foil_virtual_lab"}`,
+                `App: ${
+                    state.project?.databricks.appResource ?? "foil_virtual_lab"
+                }`,
                 "databricks.foilLab.openAppSpec",
                 "browser"
             ),
@@ -221,7 +223,9 @@ export class FoilLabTreeDataProvider
             app.catalog.length > 0 && app.sqlWarehouseId.length > 0;
         const items: FoilLabTreeNode[] = [
             this.action(
-                `${app.appName} · ${configured ? "configured" : "needs configuration"}`,
+                `${app.appName} · ${
+                    configured ? "configured" : "needs configuration"
+                }`,
                 "databricks.foilLab.openAppSpec",
                 configured ? "pass" : "warning"
             ),
@@ -345,17 +349,10 @@ export class FoilLabTreeDataProvider
         label: string,
         kind: FoilLabTreeNode["kind"]
     ): FoilLabTreeNode {
-        return this.node(
-            label,
-            kind,
-            TreeItemCollapsibleState.None,
-            "info"
-        );
+        return this.node(label, kind, TreeItemCollapsibleState.None, "info");
     }
 
-    private issueNodes(
-        issues: FoilLabValidationIssue[]
-    ): FoilLabTreeNode[] {
+    private issueNodes(issues: FoilLabValidationIssue[]): FoilLabTreeNode[] {
         return issues.map((issue) => {
             const node = this.node(
                 issue.message,
@@ -368,16 +365,11 @@ export class FoilLabTreeDataProvider
         });
     }
 
-    private formatIssues(
-        issues: FoilLabValidationIssue[]
-    ): string | undefined {
+    private formatIssues(issues: FoilLabValidationIssue[]): string | undefined {
         return issues.length === 0
             ? undefined
             : issues
-                  .map(
-                      (issue) =>
-                          `${issue.severity}: ${issue.message}`
-                  )
+                  .map((issue) => `${issue.severity}: ${issue.message}`)
                   .join("\n");
     }
 
@@ -387,10 +379,7 @@ export class FoilLabTreeDataProvider
         collapsibleState: TreeItemCollapsibleState,
         icon: string
     ): FoilLabTreeNode {
-        const node = new TreeItem(
-            label,
-            collapsibleState
-        ) as FoilLabTreeNode;
+        const node = new TreeItem(label, collapsibleState) as FoilLabTreeNode;
         node.kind = kind;
         node.iconPath = new ThemeIcon(icon);
         return node;

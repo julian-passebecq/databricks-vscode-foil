@@ -243,10 +243,7 @@ if __name__ == "__main__":
 `;
 }
 
-function buildJobYaml(
-    campaign: FoilCampaignConfig,
-    resource: string
-): string {
+function buildJobYaml(campaign: FoilCampaignConfig, resource: string): string {
     return `resources:
   jobs:
     ${resource}:
@@ -322,14 +319,18 @@ export function compileCampaign(
     campaign: FoilCampaignConfig
 ): FoilCampaignCompilationPlan {
     if (!SAFE_ID.test(campaign.campaignId)) {
-        throw new Error("Campaign id is not safe for generated Databricks resources.");
+        throw new Error(
+            "Campaign id is not safe for generated Databricks resources."
+        );
     }
     if (!SAFE_SCHEMA.test(project.databricks.goldSchema)) {
         throw new Error("Gold schema is not a safe Unity Catalog identifier.");
     }
 
     if (machine.machineId !== campaign.machineId) {
-        throw new Error("Campaign machineId does not match the supplied machine profile.");
+        throw new Error(
+            "Campaign machineId does not match the supplied machine profile."
+        );
     }
 
     const sourceHash = createHash("sha256")

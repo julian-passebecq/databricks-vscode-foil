@@ -1,12 +1,11 @@
-import type {
-    FoilCampaignConfig,
-    FoilLabProjectConfig,
-} from "./FoilLabTypes";
+import type {FoilCampaignConfig, FoilLabProjectConfig} from "./FoilLabTypes";
 
 function jsonString(value: unknown): string {
     const serialized = JSON.stringify(value);
     if (serialized === undefined) {
-        throw new Error("Unable to serialize FOIL analysis module configuration.");
+        throw new Error(
+            "Unable to serialize FOIL analysis module configuration."
+        );
     }
     return serialized;
 }
@@ -20,14 +19,11 @@ export function isAnalysisEnabled(
     moduleId: string
 ): boolean {
     return campaign.analyses.some(
-        (analysis) =>
-            analysis.module === moduleId && analysis.enabled !== false
+        (analysis) => analysis.module === moduleId && analysis.enabled !== false
     );
 }
 
-export function buildAnalysisTaskYaml(
-    campaign: FoilCampaignConfig
-): string {
+export function buildAnalysisTaskYaml(campaign: FoilCampaignConfig): string {
     const tasks: string[] = [];
 
     if (isAnalysisEnabled(campaign, "descriptive_statistics")) {

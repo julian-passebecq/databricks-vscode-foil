@@ -52,7 +52,9 @@ export class FoilLabCommands {
             return;
         }
         window.showInformationMessage(
-            `FOIL Lab validation passed${warnings.length > 0 ? ` with ${warnings.length} warning(s)` : ""}.`
+            `FOIL Lab validation passed${
+                warnings.length > 0 ? ` with ${warnings.length} warning(s)` : ""
+            }.`
         );
     };
 
@@ -199,9 +201,7 @@ export class FoilLabCommands {
             value: state.app.catalog,
             placeHolder: "foil",
             validateInput: (value) =>
-                value.trim().length === 0
-                    ? "Catalog is required."
-                    : undefined,
+                value.trim().length === 0 ? "Catalog is required." : undefined,
         });
         if (catalog === undefined) {
             return;
@@ -285,17 +285,13 @@ export class FoilLabCommands {
         }
     };
 
-    private async pickCampaign(
-        title: string
-    ): Promise<string | undefined> {
+    private async pickCampaign(title: string): Promise<string | undefined> {
         const state = await this.model.refresh();
         const validCampaigns = state.campaigns.filter(
             (campaign) => campaign.config !== undefined
         );
         if (validCampaigns.length === 0) {
-            window.showWarningMessage(
-                "No valid FOIL campaign is available."
-            );
+            window.showWarningMessage("No valid FOIL campaign is available.");
             return undefined;
         }
 

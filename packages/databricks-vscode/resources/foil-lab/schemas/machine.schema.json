@@ -16,24 +16,13 @@
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
         },
         "technology": {
-            "enum": [
-                "EOLIEN",
-                "HYDROLIEN",
-                "PROPULSION"
-            ]
+            "enum": ["EOLIEN", "HYDROLIEN", "PROPULSION"]
         },
         "status": {
-            "enum": [
-                "ACTIVE",
-                "REFERENCE_ONLY",
-                "EXPERIMENTAL"
-            ]
+            "enum": ["ACTIVE", "REFERENCE_ONLY", "EXPERIMENTAL"]
         },
         "classification": {
-            "enum": [
-                "SYNTHETIC",
-                "SANITIZED_APPROVED"
-            ]
+            "enum": ["SYNTHETIC", "SANITIZED_APPROVED"]
         },
         "modelVersion": {
             "type": "string",

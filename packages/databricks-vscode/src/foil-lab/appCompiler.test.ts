@@ -40,14 +40,10 @@ describe("compileApp", () => {
     });
 
     it("rejects an unconfigured warehouse", () => {
-        assert.throws(() =>
-            compileApp({...app, sqlWarehouseId: ""})
-        );
+        assert.throws(() => compileApp({...app, sqlWarehouseId: ""}));
     });
 
     it("rejects invalid Databricks App names", () => {
-        assert.throws(() =>
-            compileApp({...app, appName: "FOIL_App"})
-        );
+        assert.throws(() => compileApp({...app, appName: "FOIL_App"}));
     });
 });

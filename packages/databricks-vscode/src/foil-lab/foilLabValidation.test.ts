@@ -42,7 +42,9 @@ describe("FOIL Lab validation", () => {
             },
         });
 
-        assert.ok(result.issues.some((issue) => issue.path === "allowRealData"));
+        assert.ok(
+            result.issues.some((issue) => issue.path === "allowRealData")
+        );
         assert.strictEqual(result.config, undefined);
     });
 
@@ -115,5 +117,4 @@ describe("FOIL Lab validation", () => {
         assert.strictEqual(result.config, undefined);
         assert.ok(result.issues.some((issue) => issue.path === "appName"));
     });
-
 });
