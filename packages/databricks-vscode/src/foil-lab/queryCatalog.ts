@@ -148,4 +148,3 @@ ORDER BY parameter_path, value_index;
         },
     ];
 }
-\n\n\n\n\n\n\n    return "`" + value.replace(/`/g, "``") + "`";
