@@ -1,0 +1,53 @@
+name: FOIL Extension CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "packages/databricks-vscode/src/foil-lab/**"
+      - "packages/databricks-vscode/src/ui/foil-lab/**"
+      - "packages/databricks-vscode/resources/foil-lab/**"
+      - "packages/databricks-vscode/src/extension.ts"
+      - "packages/databricks-vscode/package.json"
+      - ".github/workflows/foil-ci.yml"
+  push:
+    branches: [foil-lab-mvp]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and FOIL tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: yarn
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Fetch Databricks CLI
+        run: yarn run package:cli:fetch
+        working-directory: packages/databricks-vscode
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Lint and formatting
+        run: yarn run test:lint
+        working-directory: packages/databricks-vscode
+
+      - name: Build extension
+        run: yarn run build
+
+      - name: FOIL unit tests
+        run: yarn run test:foil
+        working-directory: packages/databricks-vscode

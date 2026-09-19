@@ -2024,6 +2024,7 @@
         "watch": "yarn run package:wrappers:write && yarn run package:jupyter-init-script:write && yarn run package:copy-webview-toolkit && yarn run package:copy-markdown-it && yarn run package:copy-highlight && tsc --build --watch --verbose",
         "fix": "eslint src --fix && prettier . --write",
         "test:lint": "eslint src && prettier . -c",
+        "test:foil": "ts-mocha --type-check 'src/foil-lab/**/*.test.ts'",
         "test:unit": "yarn run build && node ./out/test/runTest.js",
         "test:python": "DATABRICKS_EXTENSION_UNIT_TESTS=1 python -B -m unittest discover -s ./src/test/python -p '*_test.py'",
         "test:integ:prepare": "./scripts/package-vsix-tests.sh",
