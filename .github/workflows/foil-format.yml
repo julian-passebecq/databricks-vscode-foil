@@ -1,0 +1,48 @@
+name: FOIL One-Time Format
+
+on:
+  push:
+    branches: [foil-lab-mvp]
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: foil-lab-mvp
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: yarn
+
+      - run: corepack enable
+
+      - run: yarn install --immutable
+
+      - name: Format FOIL sources
+        working-directory: packages/databricks-vscode
+        run: >
+          yarn prettier
+          "resources/foil-lab/schemas/*.json"
+          "src/foil-lab/**/*.ts"
+          "src/ui/foil-lab/**/*.ts"
+          --write
+
+      - name: Commit formatting
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/databricks-vscode/resources/foil-lab
+          git add packages/databricks-vscode/src/foil-lab
+          git add packages/databricks-vscode/src/ui/foil-lab
+          git commit -m "style(foil-lab): format sources"
+          git push origin HEAD:foil-lab-mvp
