@@ -16,4 +16,6 @@ The Free/Demo scaffold defaults to `SYNTHETIC` and keeps arbitrary real-data ing
 
 ## Next implementation layers
 
-The current MVP establishes the editor contract, navigation, validation, and deployment wrappers. The next layers are the lab compiler, live Free Edition capability probes, Gold query/result panels, AI/BI dashboard generation, and a bundle-managed Streamlit Databricks App.
+The current MVP establishes the editor contract, navigation, validation, deployment wrappers, deterministic campaign compilation, a reproducible Gold scenario matrix, and a bundle-managed read-only Streamlit App. Every campaign expands its test configuration into stable scenario IDs in `campaign_scenarios` plus long-form `scenario_parameters`; future physics, statistics, optimization, and ML modules should consume those scenario IDs instead of generating their own incompatible grids.
+
+The next layers are live Free Edition capability probes, richer Gold query/result panels, AI/BI dashboard compilation, and validated model/analysis modules that attach results back to the scenario contract.

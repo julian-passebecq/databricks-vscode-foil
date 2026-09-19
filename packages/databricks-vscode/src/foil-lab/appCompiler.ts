@@ -177,6 +177,29 @@ with campaigns_tab:
                 hide_index=True,
             )
 
+        scenarios = safe_query(
+            f"""
+            SELECT campaign_id, source_hash, scenario_index, scenario_id,
+                   parameters_json
+            FROM {full_table("campaign_scenarios")}
+            ORDER BY campaign_id, scenario_index
+            LIMIT 10000
+            """,
+            "Scenario matrix",
+        )
+        selected_scenarios = (
+            scenarios[scenarios["campaign_id"] == selected]
+            if not scenarios.empty
+            else scenarios
+        )
+        st.metric("Scenario count", len(selected_scenarios))
+        if not selected_scenarios.empty:
+            st.dataframe(
+                selected_scenarios,
+                use_container_width=True,
+                hide_index=True,
+            )
+
 with statistics_tab:
     statistics = safe_query(
         f"""
@@ -233,11 +256,13 @@ export function compileApp(config: FoilAppConfig): FoilAppCompilationPlan {
     const requiredGoldTables = [
         "campaign_registry",
         "campaign_parameters",
+        "campaign_scenarios",
+        "scenario_parameters",
         "campaign_design_statistics",
     ];
 
     const manifest = {
-        compilerVersion: "0.1",
+        compilerVersion: "0.2",
         resourceKey: config.appId,
         appName: config.appName,
         deployment: config.deployment,

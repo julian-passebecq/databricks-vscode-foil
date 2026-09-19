@@ -84,6 +84,8 @@ separately after validation.
 
 from __future__ import annotations
 
+import hashlib
+import itertools
 import json
 from datetime import datetime, timezone
 
@@ -108,6 +110,41 @@ def flatten_parameters(value, prefix=""):
         return rows
     rows.append((prefix, 0, value))
     return rows
+
+
+def scenario_dimensions(value, prefix=""):
+    dimensions = []
+    if isinstance(value, dict):
+        for key in sorted(value):
+            path = f"{prefix}.{key}" if prefix else key
+            dimensions.extend(scenario_dimensions(value[key], path))
+        return dimensions
+    values = value if isinstance(value, list) else [value]
+    dimensions.append((prefix, values))
+    return dimensions
+
+
+def build_scenarios(test):
+    dimensions = scenario_dimensions(test)
+    if any(len(values) == 0 for _, values in dimensions):
+        return []
+
+    paths = [path for path, _ in dimensions]
+    choices = [values for _, values in dimensions]
+    combinations = itertools.product(*choices) if choices else [()]
+    scenarios = []
+    for scenario_index, combination in enumerate(combinations):
+        parameters = dict(zip(paths, combination))
+        canonical = json.dumps(
+            parameters,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        scenario_id = hashlib.sha256(
+            f"{SOURCE_HASH}:{canonical}".encode("utf8")
+        ).hexdigest()[:20]
+        scenarios.append((scenario_index, scenario_id, parameters, canonical))
+    return scenarios
 
 
 def main():
@@ -224,6 +261,72 @@ def main():
             """
         )
 
+    scenarios = build_scenarios(CAMPAIGN.get("test", {}))
+    scenario_rows = [
+        (campaign_id, SOURCE_HASH, index, scenario_id, canonical)
+        for index, scenario_id, _, canonical in scenarios
+    ]
+    if scenario_rows:
+        scenario_frame = spark.createDataFrame(
+            scenario_rows,
+            schema=(
+                "campaign_id string, source_hash string, scenario_index int, "
+                "scenario_id string, parameters_json string"
+            ),
+        )
+        scenario_frame.createOrReplaceTempView("foil_campaign_scenarios")
+        spark.sql(
+            f"""
+            MERGE INTO `{gold_schema}`.campaign_scenarios target
+            USING foil_campaign_scenarios source
+            ON target.campaign_id = source.campaign_id
+               AND target.source_hash = source.source_hash
+               AND target.scenario_id = source.scenario_id
+            WHEN MATCHED THEN UPDATE SET *
+            WHEN NOT MATCHED THEN INSERT *
+            """
+        )
+
+        scenario_parameter_rows = []
+        for _, scenario_id, parameters, _ in scenarios:
+            for parameter_path, value in sorted(parameters.items()):
+                numeric = (
+                    float(value)
+                    if isinstance(value, (int, float)) and not isinstance(value, bool)
+                    else None
+                )
+                scenario_parameter_rows.append(
+                    (
+                        campaign_id,
+                        SOURCE_HASH,
+                        scenario_id,
+                        parameter_path,
+                        json.dumps(value, sort_keys=True),
+                        numeric,
+                    )
+                )
+        scenario_parameters = spark.createDataFrame(
+            scenario_parameter_rows,
+            schema=(
+                "campaign_id string, source_hash string, scenario_id string, "
+                "parameter_path string, parameter_value_json string, "
+                "parameter_value_numeric double"
+            ),
+        )
+        scenario_parameters.createOrReplaceTempView("foil_scenario_parameters")
+        spark.sql(
+            f"""
+            MERGE INTO `{gold_schema}`.scenario_parameters target
+            USING foil_scenario_parameters source
+            ON target.campaign_id = source.campaign_id
+               AND target.source_hash = source.source_hash
+               AND target.scenario_id = source.scenario_id
+               AND target.parameter_path = source.parameter_path
+            WHEN MATCHED THEN UPDATE SET *
+            WHEN NOT MATCHED THEN INSERT *
+            """
+        )
+
     print(
         json.dumps(
             {
@@ -231,6 +334,7 @@ def main():
                 "source_hash": SOURCE_HASH,
                 "gold_schema": gold_schema,
                 "parameter_rows": len(parameter_rows),
+                "scenario_count": len(scenarios),
                 "status": "CAMPAIGN_CONTRACT_REGISTERED",
             },
             sort_keys=True,
@@ -274,6 +378,16 @@ function buildDashboardIntent(
             id: "campaign_parameters",
             table: `${project.databricks.goldSchema}.campaign_parameters`,
         },
+        {
+            id: "campaign_scenarios",
+            table: `${project.databricks.goldSchema}.campaign_scenarios`,
+            scope: "EXPERIMENT_DESIGN_MATRIX",
+        },
+        {
+            id: "scenario_parameters",
+            table: `${project.databricks.goldSchema}.scenario_parameters`,
+            scope: "EXPERIMENT_DESIGN_MATRIX",
+        },
     ];
     if (isAnalysisEnabled(campaign, "descriptive_statistics")) {
         datasets.push({
@@ -297,7 +411,12 @@ function buildAppPageIntent(
     project: FoilLabProjectConfig,
     campaign: FoilCampaignConfig
 ): unknown {
-    const sections = ["campaign_contract", "parameters", "analysis_plan"];
+    const sections = [
+        "campaign_contract",
+        "parameters",
+        "scenario_matrix",
+        "analysis_plan",
+    ];
     if (isAnalysisEnabled(campaign, "descriptive_statistics")) {
         sections.push("design_statistics");
     }
@@ -346,7 +465,7 @@ export function compileCampaign(
         sourceHash
     );
     const manifest = {
-        compilerVersion: "0.2",
+        compilerVersion: "0.3",
         campaignId: campaign.campaignId,
         technology: campaign.technology,
         machineId: campaign.machineId,
@@ -358,6 +477,8 @@ export function compileCampaign(
         outputContract: {
             campaignRegistry: `${project.databricks.goldSchema}.campaign_registry`,
             campaignParameters: `${project.databricks.goldSchema}.campaign_parameters`,
+            campaignScenarios: `${project.databricks.goldSchema}.campaign_scenarios`,
+            scenarioParameters: `${project.databricks.goldSchema}.scenario_parameters`,
             designStatistics:
                 descriptiveStatistics === undefined
                     ? undefined

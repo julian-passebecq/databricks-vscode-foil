@@ -75,11 +75,26 @@ describe("compileCampaign", () => {
         assert.ok(job?.content.includes("environment_key: default"));
         assert.ok(job?.content.includes("spark_python_task:"));
         assert.ok(runner?.content.includes("campaign_registry"));
+        assert.ok(runner?.content.includes("campaign_scenarios"));
+        assert.ok(runner?.content.includes("scenario_parameters"));
+        assert.ok(runner?.content.includes("build_scenarios"));
+        assert.ok(runner?.content.includes("scenario_count"));
         assert.ok(runner?.content.includes("statistical, or ML results"));
         assert.ok(job?.content.includes("task_key: descriptive_statistics"));
         assert.ok(job?.content.includes("depends_on:"));
         assert.ok(statistics?.content.includes("campaign_design_statistics"));
         assert.ok(statistics?.content.includes("EXPERIMENT_DESIGN_PARAMETERS"));
+
+        const dashboard = plan.artifacts.find(
+            (artifact) =>
+                artifact.relativePath === "dashboard/dashboard-intent.json"
+        );
+        const appPage = plan.artifacts.find(
+            (artifact) => artifact.relativePath === "ui/campaign-page.json"
+        );
+        assert.ok(dashboard?.content.includes("campaign_scenarios"));
+        assert.ok(dashboard?.content.includes("scenario_parameters"));
+        assert.ok(appPage?.content.includes("scenario_matrix"));
     });
 
     it("changes the source hash when the campaign changes", () => {

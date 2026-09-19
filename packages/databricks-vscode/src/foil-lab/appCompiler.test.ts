@@ -36,6 +36,9 @@ describe("compileApp", () => {
         assert.ok(appYaml?.content.includes("valueFrom: foil-sql-warehouse"));
         assert.ok(appYaml?.content.includes("streamlit"));
         assert.ok(python?.content.includes("campaign_registry"));
+        assert.ok(python?.content.includes("campaign_scenarios"));
+        assert.ok(python?.content.includes("Scenario count"));
+        assert.ok(plan.requiredGoldTables.includes("scenario_parameters"));
         assert.ok(python?.content.includes("read-only Gold layer"));
     });
 
