@@ -782,6 +782,18 @@
                 "title": "Apply FOIL Streamlit App to bundle",
                 "category": "FOIL Lab",
                 "icon": "$(git-merge)"
+            },
+            {
+                "command": "databricks.foilLab.generateDashboard",
+                "title": "Generate FOIL AI/BI dashboard",
+                "category": "FOIL Lab",
+                "icon": "$(dashboard)"
+            },
+            {
+                "command": "databricks.foilLab.applyDashboard",
+                "title": "Apply FOIL AI/BI dashboard to bundle",
+                "category": "FOIL Lab",
+                "icon": "$(git-merge)"
             }
         ],
         "viewsContainers": {

@@ -281,6 +281,54 @@ export class FoilLabCommands {
         }
     };
 
+    generateDashboard = async (): Promise<void> => {
+        try {
+            const manifestPath = await this.manager.generateDashboard();
+            await this.openFile(manifestPath);
+            window.showInformationMessage(
+                "FOIL AI/BI dashboard generated from the Gold contract. No deployment was performed."
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to generate FOIL AI/BI dashboard: ${(e as Error).message}`
+            );
+        }
+    };
+
+    applyDashboard = async (): Promise<void> => {
+        const confirmation = await window.showWarningMessage(
+            "Apply the generated FOIL AI/BI dashboard to the active Databricks bundle? Run a campaign first so the Gold datasets exist. This does not deploy the bundle.",
+            {modal: true},
+            "Apply"
+        );
+        if (confirmation !== "Apply") {
+            return;
+        }
+
+        try {
+            const result = await this.manager.applyDashboard();
+            let validationMessage =
+                "Bundle target is not configured; validate before deployment.";
+            if (
+                this.bundleValidateModel.target &&
+                this.bundleValidateModel.authProvider
+            ) {
+                await this.bundleValidateModel.refresh();
+                validationMessage = "Databricks bundle validation passed.";
+            }
+
+            window.showInformationMessage(
+                result.changed
+                    ? `FOIL AI/BI dashboard added to ${result.bundleFile}. ${validationMessage}`
+                    : `FOIL AI/BI dashboard is already included. ${validationMessage}`
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to apply FOIL AI/BI dashboard: ${(e as Error).message}`
+            );
+        }
+    };
+
     applyApp = async (): Promise<void> => {
         const confirmation = await window.showWarningMessage(
             "Apply the generated FOIL Streamlit App to the active Databricks bundle? Run at least one descriptive-statistics campaign first so the bound Gold tables exist. This does not deploy the bundle.",

@@ -20,6 +20,7 @@ interface FoilLabTreeNode extends TreeItem {
         | "campaigns"
         | "campaign"
         | "app"
+        | "dashboard"
         | "free"
         | "capability"
         | "actions"
@@ -60,6 +61,8 @@ export class FoilLabTreeDataProvider
                 return this.getCampaignChildren();
             case "app":
                 return this.getAppChildren();
+            case "dashboard":
+                return this.getDashboardChildren();
             case "free":
                 return this.getFreeCapabilityChildren();
             case "actions":
@@ -104,6 +107,12 @@ export class FoilLabTreeDataProvider
                 "app",
                 TreeItemCollapsibleState.Expanded,
                 "browser"
+            ),
+            this.node(
+                "AI/BI Dashboard",
+                "dashboard",
+                TreeItemCollapsibleState.Expanded,
+                "dashboard"
             ),
             this.node(
                 "Databricks Free",
@@ -250,6 +259,34 @@ export class FoilLabTreeDataProvider
         return [...items, ...this.issueNodes(this.model.state.appIssues)];
     }
 
+    private getDashboardChildren(): FoilLabTreeNode[] {
+        const app = this.model.state.app;
+        const configured =
+            app !== undefined &&
+            app.catalog.length > 0 &&
+            app.sqlWarehouseId.length > 0;
+
+        return [
+            this.action(
+                configured
+                    ? `Gold: ${app!.catalog}.${app!.goldSchema}`
+                    : "Configure catalog + SQL warehouse first",
+                "databricks.foilLab.configureApp",
+                configured ? "pass" : "warning"
+            ),
+            this.action(
+                "Generate AI/BI dashboard",
+                "databricks.foilLab.generateDashboard",
+                "package"
+            ),
+            this.action(
+                "Apply dashboard to bundle",
+                "databricks.foilLab.applyDashboard",
+                "git-merge"
+            ),
+        ];
+    }
+
     private getFreeCapabilityChildren(): FoilLabTreeNode[] {
         return FREE_EDITION_PROFILE.capabilities.map((capability) => {
             const icon =
@@ -320,6 +357,16 @@ export class FoilLabTreeDataProvider
             this.action(
                 "Apply Streamlit App to bundle",
                 "databricks.foilLab.applyApp",
+                "git-merge"
+            ),
+            this.action(
+                "Generate AI/BI dashboard",
+                "databricks.foilLab.generateDashboard",
+                "dashboard"
+            ),
+            this.action(
+                "Apply AI/BI dashboard to bundle",
+                "databricks.foilLab.applyDashboard",
                 "git-merge"
             ),
             this.action(

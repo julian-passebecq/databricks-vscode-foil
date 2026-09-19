@@ -9,6 +9,7 @@ import {
 } from "../bundle/BundleFileSet";
 import {WorkspaceFolderManager} from "../vscode-objs/WorkspaceFolderManager";
 import {compileApp} from "./appCompiler";
+import {compileDashboard} from "./dashboardCompiler";
 import {addBundleInclude} from "./bundleIntegration";
 import {compileCampaign as buildCampaign} from "./compileCampaign";
 import {FoilLabModel} from "./FoilLabModel";
@@ -322,6 +323,62 @@ export class FoilLabManager implements Disposable {
         }
 
         return path.join(root, "app", "manifest.json");
+    }
+
+    async generateDashboard(): Promise<string> {
+        await this.model.refresh();
+        const root = this.model.labRootPath;
+        const app = this.model.state.app;
+        const project = this.model.state.project;
+        if (root === undefined || app === undefined || project === undefined) {
+            throw new Error(
+                "Initialize and configure the FOIL Lab before generating the AI/BI dashboard."
+            );
+        }
+        if (app.goldSchema !== project.databricks.goldSchema) {
+            throw new Error(
+                "Dashboard Gold schema must match the FOIL project Gold schema."
+            );
+        }
+
+        const plan = compileDashboard(app);
+        for (const artifact of plan.artifacts) {
+            const target = path.join(root, artifact.relativePath);
+            await mkdir(path.dirname(target), {recursive: true});
+            await writeFile(target, artifact.content, "utf8");
+        }
+
+        return path.join(root, "dashboard", "manifest.json");
+    }
+
+    async applyDashboard(): Promise<{
+        manifestPath: string;
+        bundleFile: string;
+        includePath: string;
+        changed: boolean;
+    }> {
+        const manifestPath = await this.generateDashboard();
+        const rootFile = await this.bundleFileSet.getRootFile();
+        if (rootFile === undefined) {
+            throw new Error(
+                "No unique Databricks bundle root file was found in the active project."
+            );
+        }
+
+        const includePath = ".foil-lab/foil-dashboard.yml";
+        const bundle = await parseBundleYaml(rootFile);
+        const integrated = addBundleInclude(bundle, includePath);
+        if (integrated.changed) {
+            await writeBundleYaml(rootFile, integrated.bundle);
+            this.bundleFileSet.bundleDataCache.invalidate();
+        }
+
+        return {
+            manifestPath,
+            bundleFile: rootFile.fsPath,
+            includePath,
+            changed: integrated.changed,
+        };
     }
 
     async applyApp(): Promise<{
