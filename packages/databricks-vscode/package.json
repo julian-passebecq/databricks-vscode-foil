@@ -758,6 +758,24 @@
                 "title": "Apply FOIL campaign to bundle",
                 "category": "FOIL Lab",
                 "icon": "$(git-merge)"
+            },
+            {
+                "command": "databricks.foilLab.configureApp",
+                "title": "Configure FOIL Streamlit App",
+                "category": "FOIL Lab",
+                "icon": "$(gear)"
+            },
+            {
+                "command": "databricks.foilLab.generateApp",
+                "title": "Generate FOIL Streamlit App",
+                "category": "FOIL Lab",
+                "icon": "$(package)"
+            },
+            {
+                "command": "databricks.foilLab.applyApp",
+                "title": "Apply FOIL Streamlit App to bundle",
+                "category": "FOIL Lab",
+                "icon": "$(git-merge)"
             }
         ],
         "viewsContainers": {
@@ -1064,6 +1082,16 @@
                     "command": "databricks.foilLab.applyCampaign",
                     "when": "view == foilLabView",
                     "group": "navigation@4"
+                },
+                {
+                    "command": "databricks.foilLab.configureApp",
+                    "when": "view == foilLabView",
+                    "group": "navigation@5"
+                },
+                {
+                    "command": "databricks.foilLab.generateApp",
+                    "when": "view == foilLabView",
+                    "group": "navigation@6"
                 }
             ],
             "databricks.cluster.filter": [

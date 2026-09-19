@@ -78,12 +78,16 @@ export const ANALYSIS_REGISTRY = {
 };
 
 export const APP_SPEC = {
-    version: "0.1",
+    version: "0.2",
     appId: "foil_virtual_lab",
+    appName: "foil-virtual-lab",
     framework: "STREAMLIT",
     deployment: "DATABRICKS_APP",
+    catalog: "",
     goldSchema: "foil_gold",
-    canLaunchCampaigns: true,
+    sqlWarehouseId: "",
+    readOnly: true,
+    canLaunchCampaigns: false,
     pages: [
         "overview",
         "machine",

@@ -1,4 +1,5 @@
 import type {
+    FoilAppConfig,
     FoilCampaignConfig,
     FoilLabProjectConfig,
     FoilLabValidationIssue,
@@ -17,6 +18,7 @@ const CLASSIFICATIONS = new Set([
 ]);
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 const SAFE_SCHEMA = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const SAFE_APP_NAME = /^[a-z0-9][a-z0-9-]*$/;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return (
@@ -343,6 +345,147 @@ export function validateCampaignConfig(value: unknown): {
     }
     return {
         config: value as unknown as FoilCampaignConfig,
+        issues,
+    };
+}
+
+
+export function validateAppConfig(value: unknown): {
+    config?: FoilAppConfig;
+    issues: FoilLabValidationIssue[];
+} {
+    const issues: FoilLabValidationIssue[] = [];
+    if (!isRecord(value)) {
+        return {
+            issues: [
+                error(
+                    "app",
+                    "App configuration must be an object."
+                ),
+            ],
+        };
+    }
+
+    validateSafeId(value.appId, "appId", issues);
+    if (
+        typeof value.appName !== "string" ||
+        !SAFE_APP_NAME.test(value.appName)
+    ) {
+        issues.push(
+            error(
+                "appName",
+                "Databricks App name must contain only lowercase letters, numbers, and hyphens."
+            )
+        );
+    }
+    if (value.framework !== "STREAMLIT") {
+        issues.push(
+            error(
+                "framework",
+                "The current FOIL App compiler supports STREAMLIT only."
+            )
+        );
+    }
+    if (
+        value.deployment !== "DATABRICKS_APP" &&
+        value.deployment !== "EXTERNAL"
+    ) {
+        issues.push(
+            error(
+                "deployment",
+                "App deployment must be DATABRICKS_APP or EXTERNAL."
+            )
+        );
+    }
+    if (
+        typeof value.goldSchema !== "string" ||
+        !SAFE_SCHEMA.test(value.goldSchema)
+    ) {
+        issues.push(
+            error(
+                "goldSchema",
+                "App goldSchema must be a simple Unity Catalog schema identifier."
+            )
+        );
+    }
+    if (typeof value.catalog !== "string") {
+        issues.push(
+            error("catalog", "catalog must be a string.")
+        );
+    } else if (value.catalog === "") {
+        issues.push(
+            warning(
+                "catalog",
+                "Configure the Unity Catalog catalog before generating the Databricks App."
+            )
+        );
+    } else if (!SAFE_SCHEMA.test(value.catalog)) {
+        issues.push(
+            error(
+                "catalog",
+                "catalog must be a simple Unity Catalog identifier."
+            )
+        );
+    }
+    if (typeof value.sqlWarehouseId !== "string") {
+        issues.push(
+            error(
+                "sqlWarehouseId",
+                "sqlWarehouseId must be a string."
+            )
+        );
+    } else if (value.sqlWarehouseId === "") {
+        issues.push(
+            warning(
+                "sqlWarehouseId",
+                "Configure the SQL warehouse before generating the Databricks App."
+            )
+        );
+    } else if (!SAFE_ID.test(value.sqlWarehouseId)) {
+        issues.push(
+            error(
+                "sqlWarehouseId",
+                "sqlWarehouseId contains unsupported characters."
+            )
+        );
+    }
+    if (value.readOnly !== true) {
+        issues.push(
+            warning(
+                "readOnly",
+                "The first FOIL Databricks App should remain read-only until write/control actions are explicitly implemented."
+            )
+        );
+    }
+    if (value.canLaunchCampaigns === true) {
+        issues.push(
+            warning(
+                "canLaunchCampaigns",
+                "Campaign launch from Streamlit is not enabled in the current App compiler."
+            )
+        );
+    }
+    if (
+        !Array.isArray(value.pages) ||
+        !value.pages.every(
+            (page) => typeof page === "string" && page.length > 0
+        )
+    ) {
+        issues.push(
+            error(
+                "pages",
+                "pages must be an array of non-empty strings."
+            )
+        );
+    }
+
+    if (
+        issues.some((issue) => issue.severity === "error")
+    ) {
+        return {issues};
+    }
+    return {
+        config: value as unknown as FoilAppConfig,
         issues,
     };
 }

@@ -8,6 +8,7 @@ import {
     writeBundleYaml,
 } from "../bundle/BundleFileSet";
 import {WorkspaceFolderManager} from "../vscode-objs/WorkspaceFolderManager";
+import {compileApp} from "./appCompiler";
 import {addBundleInclude} from "./bundleIntegration";
 import {compileCampaign as buildCampaign} from "./compileCampaign";
 import {FoilLabModel} from "./FoilLabModel";
@@ -172,6 +173,98 @@ export class FoilLabManager implements Disposable {
         }
 
         const includePath = `.foil-lab/build/${campaignId}/resources/campaign.job.yml`;
+        const bundle = await parseBundleYaml(rootFile);
+        const integrated = addBundleInclude(bundle, includePath);
+        if (integrated.changed) {
+            await writeBundleYaml(rootFile, integrated.bundle);
+            this.bundleFileSet.bundleDataCache.invalidate();
+        }
+
+        return {
+            manifestPath,
+            bundleFile: rootFile.fsPath,
+            includePath,
+            changed: integrated.changed,
+        };
+    }
+
+    async configureApp(
+        catalog: string,
+        sqlWarehouseId: string
+    ): Promise<string> {
+        await this.model.refresh();
+        const app = this.model.state.app;
+        const appSpecPath = this.model.appSpecPath;
+        if (app === undefined || appSpecPath === undefined) {
+            throw new Error(
+                "Initialize the FOIL Lab before configuring the App."
+            );
+        }
+
+        const updated = {
+            ...app,
+            catalog: catalog.trim(),
+            sqlWarehouseId: sqlWarehouseId.trim(),
+            goldSchema:
+                this.model.state.project?.databricks.goldSchema ??
+                app.goldSchema,
+            readOnly: true,
+            canLaunchCampaigns: false,
+        };
+        await writeFile(
+            appSpecPath,
+            `${JSON.stringify(updated, null, 4)}\n`,
+            "utf8"
+        );
+        await this.model.refresh();
+        return appSpecPath;
+    }
+
+    async generateApp(): Promise<string> {
+        await this.model.refresh();
+        const root = this.model.labRootPath;
+        const app = this.model.state.app;
+        const project = this.model.state.project;
+        if (
+            root === undefined ||
+            app === undefined ||
+            project === undefined
+        ) {
+            throw new Error(
+                "Initialize and configure the FOIL Lab before generating the App."
+            );
+        }
+        if (app.goldSchema !== project.databricks.goldSchema) {
+            throw new Error(
+                "App Gold schema must match the FOIL project Gold schema."
+            );
+        }
+
+        const plan = compileApp(app);
+        for (const artifact of plan.artifacts) {
+            const target = path.join(root, artifact.relativePath);
+            await mkdir(path.dirname(target), {recursive: true});
+            await writeFile(target, artifact.content, "utf8");
+        }
+
+        return path.join(root, "app", "manifest.json");
+    }
+
+    async applyApp(): Promise<{
+        manifestPath: string;
+        bundleFile: string;
+        includePath: string;
+        changed: boolean;
+    }> {
+        const manifestPath = await this.generateApp();
+        const rootFile = await this.bundleFileSet.getRootFile();
+        if (rootFile === undefined) {
+            throw new Error(
+                "No unique Databricks bundle root file was found in the active project."
+            );
+        }
+
+        const includePath = ".foil-lab/foil-app.yml";
         const bundle = await parseBundleYaml(rootFile);
         const integrated = addBundleInclude(bundle, includePath);
         if (integrated.changed) {

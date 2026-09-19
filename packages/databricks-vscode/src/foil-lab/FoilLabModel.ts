@@ -9,6 +9,7 @@ import type {
     FoilMachineSummary,
 } from "./FoilLabTypes";
 import {
+    validateAppConfig,
     validateCampaignConfig,
     validateMachineConfig,
     validateProjectConfig,
@@ -19,6 +20,7 @@ const EMPTY_STATE: FoilLabState = {
     projectIssues: [],
     machines: [],
     campaigns: [],
+    appIssues: [],
 };
 
 export class FoilLabModel {
@@ -87,6 +89,32 @@ export class FoilLabModel {
                 return {fileName, ...validation};
             }
         );
+        const appRaw = await this.readJson(this.appSpecPath!);
+        const app =
+            appRaw === undefined
+                ? {
+                      issues: [
+                          {
+                              severity: "warning" as const,
+                              path: "app",
+                              message:
+                                  "FOIL App configuration is missing. Reinitialize the lab to restore it.",
+                          },
+                      ],
+                  }
+                : validateAppConfig(appRaw);
+        if (
+            app.config !== undefined &&
+            project.config !== undefined &&
+            app.config.goldSchema !== project.config.databricks.goldSchema
+        ) {
+            app.issues.push({
+                severity: "warning",
+                path: "goldSchema",
+                message:
+                    "App goldSchema differs from the project Gold schema.",
+            });
+        }
 
         this.setState({
             initialized: true,
@@ -94,6 +122,8 @@ export class FoilLabModel {
             projectIssues: project.issues,
             machines,
             campaigns,
+            app: app.config,
+            appIssues: app.issues,
         });
         return this._state;
     }

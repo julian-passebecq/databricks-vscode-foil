@@ -34,6 +34,7 @@ export class FoilLabCommands {
             ...state.projectIssues,
             ...state.machines.flatMap((machine) => machine.issues),
             ...state.campaigns.flatMap((campaign) => campaign.issues),
+            ...state.appIssues,
         ];
         const errors = issues.filter((issue) => issue.severity === "error");
         const warnings = issues.filter((issue) => issue.severity === "warning");
@@ -179,6 +180,107 @@ export class FoilLabCommands {
         } catch (e) {
             window.showErrorMessage(
                 `Unable to apply FOIL campaign: ${(e as Error).message}`
+            );
+        }
+    };
+
+    configureApp = async (): Promise<void> => {
+        const state = await this.model.refresh();
+        if (!state.initialized || state.app === undefined) {
+            window.showWarningMessage(
+                "Initialize the FOIL Lab before configuring the App."
+            );
+            return;
+        }
+
+        const catalog = await window.showInputBox({
+            title: "Configure FOIL App",
+            prompt: "Unity Catalog catalog containing the FOIL Gold schema",
+            value: state.app.catalog,
+            placeHolder: "foil",
+            validateInput: (value) =>
+                value.trim().length === 0
+                    ? "Catalog is required."
+                    : undefined,
+        });
+        if (catalog === undefined) {
+            return;
+        }
+
+        const sqlWarehouseId = await window.showInputBox({
+            title: "Configure FOIL App",
+            prompt: "Databricks SQL warehouse ID used by the App",
+            value: state.app.sqlWarehouseId,
+            placeHolder: "xxxxxxxxxxxxxxxx",
+            validateInput: (value) =>
+                value.trim().length === 0
+                    ? "SQL warehouse ID is required."
+                    : undefined,
+        });
+        if (sqlWarehouseId === undefined) {
+            return;
+        }
+
+        try {
+            const appSpecPath = await this.manager.configureApp(
+                catalog,
+                sqlWarehouseId
+            );
+            await this.openFile(appSpecPath);
+            window.showInformationMessage(
+                "FOIL App configuration saved. The App remains read-only."
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to configure FOIL App: ${(e as Error).message}`
+            );
+        }
+    };
+
+    generateApp = async (): Promise<void> => {
+        try {
+            const manifestPath = await this.manager.generateApp();
+            await this.openFile(manifestPath);
+            window.showInformationMessage(
+                "FOIL Streamlit App generated in .foil-lab/app. No deployment was performed."
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to generate FOIL App: ${(e as Error).message}`
+            );
+        }
+    };
+
+    applyApp = async (): Promise<void> => {
+        const confirmation = await window.showWarningMessage(
+            "Apply the generated FOIL Streamlit App to the active Databricks bundle? Run at least one descriptive-statistics campaign first so the bound Gold tables exist. This does not deploy the bundle.",
+            {modal: true},
+            "Apply"
+        );
+        if (confirmation !== "Apply") {
+            return;
+        }
+
+        try {
+            const result = await this.manager.applyApp();
+            let validationMessage =
+                "Bundle target is not configured; validate before deployment.";
+            if (
+                this.bundleValidateModel.target &&
+                this.bundleValidateModel.authProvider
+            ) {
+                await this.bundleValidateModel.refresh();
+                validationMessage = "Databricks bundle validation passed.";
+            }
+
+            window.showInformationMessage(
+                result.changed
+                    ? `FOIL App added to ${result.bundleFile}. ${validationMessage}`
+                    : `FOIL App is already included. ${validationMessage}`
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to apply FOIL App: ${(e as Error).message}`
             );
         }
     };

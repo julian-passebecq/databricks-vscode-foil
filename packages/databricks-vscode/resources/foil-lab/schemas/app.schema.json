@@ -6,9 +6,14 @@
     "required": [
         "version",
         "appId",
+        "appName",
         "framework",
         "deployment",
+        "catalog",
         "goldSchema",
+        "sqlWarehouseId",
+        "readOnly",
+        "canLaunchCampaigns",
         "pages"
     ],
     "properties": {
@@ -18,7 +23,11 @@
         },
         "appId": {
             "type": "string",
-            "minLength": 1
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+        },
+        "appName": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
         },
         "framework": {
             "const": "STREAMLIT"
@@ -29,9 +38,18 @@
                 "EXTERNAL"
             ]
         },
+        "catalog": {
+            "type": "string"
+        },
         "goldSchema": {
             "type": "string",
-            "minLength": 1
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "sqlWarehouseId": {
+            "type": "string"
+        },
+        "readOnly": {
+            "type": "boolean"
         },
         "canLaunchCampaigns": {
             "type": "boolean"

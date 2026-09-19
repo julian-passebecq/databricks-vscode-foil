@@ -827,6 +827,21 @@ export async function activate(
             "databricks.foilLab.applyCampaign",
             foilLabCommands.applyCampaign,
             foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.configureApp",
+            foilLabCommands.configureApp,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.generateApp",
+            foilLabCommands.generateApp,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.applyApp",
+            foilLabCommands.applyApp,
+            foilLabCommands
         )
     );
     const packageManagerTelemetry = new PackageManagerTelemetry(

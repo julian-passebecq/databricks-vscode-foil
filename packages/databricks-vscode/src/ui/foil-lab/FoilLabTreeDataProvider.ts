@@ -19,6 +19,7 @@ interface FoilLabTreeNode extends TreeItem {
         | "machine"
         | "campaigns"
         | "campaign"
+        | "app"
         | "free"
         | "capability"
         | "actions"
@@ -59,6 +60,8 @@ export class FoilLabTreeDataProvider
                 return this.getMachineChildren();
             case "campaigns":
                 return this.getCampaignChildren();
+            case "app":
+                return this.getAppChildren();
             case "free":
                 return this.getFreeCapabilityChildren();
             case "actions":
@@ -95,6 +98,12 @@ export class FoilLabTreeDataProvider
                 "campaigns",
                 TreeItemCollapsibleState.Expanded,
                 "graph"
+            ),
+            this.node(
+                "Streamlit App",
+                "app",
+                TreeItemCollapsibleState.Expanded,
+                "browser"
             ),
             this.node(
                 "Databricks Free",
@@ -196,6 +205,47 @@ export class FoilLabTreeDataProvider
         return campaigns;
     }
 
+    private getAppChildren(): FoilLabTreeNode[] {
+        const app = this.model.state.app;
+        if (app === undefined) {
+            return [
+                this.action(
+                    "Open App configuration",
+                    "databricks.foilLab.openAppSpec",
+                    "json"
+                ),
+            ];
+        }
+
+        const configured =
+            app.catalog.length > 0 && app.sqlWarehouseId.length > 0;
+        const items: FoilLabTreeNode[] = [
+            this.action(
+                `${app.appName} · ${configured ? "configured" : "needs configuration"}`,
+                "databricks.foilLab.openAppSpec",
+                configured ? "pass" : "warning"
+            ),
+            this.action(
+                configured
+                    ? `Gold: ${app.catalog}.${app.goldSchema}`
+                    : "Configure catalog + SQL warehouse",
+                "databricks.foilLab.configureApp",
+                "gear"
+            ),
+            this.action(
+                "Generate Streamlit App",
+                "databricks.foilLab.generateApp",
+                "package"
+            ),
+            this.action(
+                "Apply App to bundle",
+                "databricks.foilLab.applyApp",
+                "git-merge"
+            ),
+        ];
+        return [...items, ...this.issueNodes(this.model.state.appIssues)];
+    }
+
     private getFreeCapabilityChildren(): FoilLabTreeNode[] {
         return FREE_EDITION_PROFILE.capabilities.map((capability) => {
             const icon =
@@ -252,6 +302,21 @@ export class FoilLabTreeDataProvider
                 "Deploy and run resource",
                 "databricks.foilLab.deployAndRun",
                 "run"
+            ),
+            this.action(
+                "Configure Streamlit App",
+                "databricks.foilLab.configureApp",
+                "gear"
+            ),
+            this.action(
+                "Generate Streamlit App",
+                "databricks.foilLab.generateApp",
+                "package"
+            ),
+            this.action(
+                "Apply Streamlit App to bundle",
+                "databricks.foilLab.applyApp",
+                "git-merge"
             ),
             this.action(
                 "Open Gold / Unity Catalog",

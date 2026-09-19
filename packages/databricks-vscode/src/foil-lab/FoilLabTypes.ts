@@ -48,6 +48,20 @@ export interface FoilCampaignConfig {
     };
 }
 
+export interface FoilAppConfig {
+    version: string;
+    appId: string;
+    appName: string;
+    framework: "STREAMLIT";
+    deployment: "DATABRICKS_APP" | "EXTERNAL";
+    catalog: string;
+    goldSchema: string;
+    sqlWarehouseId: string;
+    readOnly: boolean;
+    canLaunchCampaigns: boolean;
+    pages: string[];
+}
+
 export interface FoilLabValidationIssue {
     severity: "error" | "warning";
     path: string;
@@ -72,4 +86,6 @@ export interface FoilLabState {
     projectIssues: FoilLabValidationIssue[];
     machines: FoilMachineSummary[];
     campaigns: FoilCampaignSummary[];
+    app?: FoilAppConfig;
+    appIssues: FoilLabValidationIssue[];
 }
