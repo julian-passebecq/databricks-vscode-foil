@@ -32,35 +32,56 @@ export class FoilLabModel {
         return this._state;
     }
 
-    get labRootPath(): string {
-        return path.join(this.workspaceFolderManager.activeProjectUri.fsPath, ".foil-lab");
+    get labRootPath(): string | undefined {
+        try {
+            return path.join(
+                this.workspaceFolderManager.activeProjectUri.fsPath,
+                ".foil-lab"
+            );
+        } catch {
+            return undefined;
+        }
     }
 
-    get projectConfigPath(): string {
-        return path.join(this.labRootPath, "project.json");
+    get projectConfigPath(): string | undefined {
+        const root = this.labRootPath;
+        return root === undefined ? undefined : path.join(root, "project.json");
     }
 
-    get appSpecPath(): string {
-        return path.join(this.labRootPath, "ui", "app.json");
+    get appSpecPath(): string | undefined {
+        const root = this.labRootPath;
+        return root === undefined ? undefined : path.join(root, "ui", "app.json");
     }
 
     async refresh(): Promise<FoilLabState> {
-        const projectRaw = await this.readJson(this.projectConfigPath);
+        const projectConfigPath = this.projectConfigPath;
+        if (projectConfigPath === undefined) {
+            this.setState(EMPTY_STATE);
+            return this._state;
+        }
+
+        const projectRaw = await this.readJson(projectConfigPath);
         if (projectRaw === undefined) {
             this.setState(EMPTY_STATE);
             return this._state;
         }
 
         const project = validateProjectConfig(projectRaw);
+        const root = this.labRootPath;
+        if (root === undefined) {
+            this.setState(EMPTY_STATE);
+            return this._state;
+        }
+
         const machines = await this.readSummaries(
-            path.join(this.labRootPath, "machines"),
+            path.join(root, "machines"),
             (fileName, value): FoilMachineSummary => {
                 const validation = validateMachineConfig(value);
                 return {fileName, ...validation};
             }
         );
         const campaigns = await this.readSummaries(
-            path.join(this.labRootPath, "campaigns"),
+            path.join(root, "campaigns"),
             (fileName, value): FoilCampaignSummary => {
                 const validation = validateCampaignConfig(value);
                 return {fileName, ...validation};

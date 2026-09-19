@@ -29,7 +29,9 @@ interface FoilLabTreeNode extends TreeItem {
 export class FoilLabTreeDataProvider
     implements TreeDataProvider<FoilLabTreeNode>, Disposable
 {
-    private readonly _onDidChangeTreeData = new EventEmitter<FoilLabTreeNode | undefined>();
+    private readonly _onDidChangeTreeData = new EventEmitter<
+        FoilLabTreeNode | undefined
+    >();
     readonly onDidChangeTreeData: Event<FoilLabTreeNode | undefined> =
         this._onDidChangeTreeData.event;
     private readonly modelSubscription: Disposable;
@@ -44,7 +46,9 @@ export class FoilLabTreeDataProvider
         return element;
     }
 
-    async getChildren(parent?: FoilLabTreeNode): Promise<FoilLabTreeNode[]> {
+    async getChildren(
+        parent?: FoilLabTreeNode
+    ): Promise<FoilLabTreeNode[]> {
         if (!parent) {
             return this.getRootNodes();
         }
@@ -67,7 +71,9 @@ export class FoilLabTreeDataProvider
     private getRootNodes(): FoilLabTreeNode[] {
         const state = this.model.state;
         const project = this.node(
-            state.initialized ? state.project?.name ?? "FOIL Virtual Lab" : "FOIL Virtual Lab",
+            state.initialized
+                ? state.project?.name ?? "FOIL Virtual Lab"
+                : "FOIL Virtual Lab",
             "project",
             TreeItemCollapsibleState.Expanded,
             "beaker"
@@ -78,17 +84,43 @@ export class FoilLabTreeDataProvider
 
         return [
             project,
-            this.node("Machines", "machines", TreeItemCollapsibleState.Expanded, "tools"),
-            this.node("Campaigns", "campaigns", TreeItemCollapsibleState.Expanded, "graph"),
-            this.node("Databricks Free", "free", TreeItemCollapsibleState.Collapsed, "cloud"),
-            this.node("Actions", "actions", TreeItemCollapsibleState.Expanded, "play"),
+            this.node(
+                "Machines",
+                "machines",
+                TreeItemCollapsibleState.Expanded,
+                "tools"
+            ),
+            this.node(
+                "Campaigns",
+                "campaigns",
+                TreeItemCollapsibleState.Expanded,
+                "graph"
+            ),
+            this.node(
+                "Databricks Free",
+                "free",
+                TreeItemCollapsibleState.Collapsed,
+                "cloud"
+            ),
+            this.node(
+                "Actions",
+                "actions",
+                TreeItemCollapsibleState.Expanded,
+                "play"
+            ),
         ];
     }
 
     private getProjectChildren(): FoilLabTreeNode[] {
         const state = this.model.state;
         if (!state.initialized) {
-            return [this.action("Initialize FOIL Lab", "databricks.foilLab.initialize", "new-folder")];
+            return [
+                this.action(
+                    "Initialize FOIL Lab",
+                    "databricks.foilLab.initialize",
+                    "new-folder"
+                ),
+            ];
         }
 
         const items: FoilLabTreeNode[] = [
@@ -144,7 +176,18 @@ export class FoilLabTreeDataProvider
             node.tooltip = this.formatIssues(campaign.issues);
             return node;
         });
-        campaigns.push(this.action("Create campaign", "databricks.foilLab.createCampaign", "add"));
+        campaigns.push(
+            this.action(
+                "Create campaign",
+                "databricks.foilLab.createCampaign",
+                "add"
+            ),
+            this.action(
+                "Compile campaign preview",
+                "databricks.foilLab.compileCampaign",
+                "package"
+            )
+        );
         return campaigns;
     }
 
@@ -170,26 +213,74 @@ export class FoilLabTreeDataProvider
 
     private getActionChildren(): FoilLabTreeNode[] {
         return [
-            this.action("Sign in / configure workspace", "databricks.foilLab.configureLogin", "account"),
-            this.action("Validate FOIL configuration", "databricks.foilLab.validate", "check-all"),
-            this.action("Validate Databricks bundle", "databricks.foilLab.validateBundle", "check"),
-            this.action("Deploy bundle", "databricks.foilLab.deploy", "cloud-upload"),
-            this.action("Deploy and run resource", "databricks.foilLab.deployAndRun", "run"),
-            this.action("Open Gold / Unity Catalog", "databricks.foilLab.focusGold", "database"),
+            this.action(
+                "Sign in / configure workspace",
+                "databricks.foilLab.configureLogin",
+                "account"
+            ),
+            this.action(
+                "Validate FOIL configuration",
+                "databricks.foilLab.validate",
+                "check-all"
+            ),
+            this.action(
+                "Compile campaign preview",
+                "databricks.foilLab.compileCampaign",
+                "package"
+            ),
+            this.action(
+                "Validate Databricks bundle",
+                "databricks.foilLab.validateBundle",
+                "check"
+            ),
+            this.action(
+                "Deploy bundle",
+                "databricks.foilLab.deploy",
+                "cloud-upload"
+            ),
+            this.action(
+                "Deploy and run resource",
+                "databricks.foilLab.deployAndRun",
+                "run"
+            ),
+            this.action(
+                "Open Gold / Unity Catalog",
+                "databricks.foilLab.focusGold",
+                "database"
+            ),
         ];
     }
 
-    private action(label: string, command: string, icon: string): FoilLabTreeNode {
-        const node = this.node(label, "action", TreeItemCollapsibleState.None, icon);
+    private action(
+        label: string,
+        command: string,
+        icon: string
+    ): FoilLabTreeNode {
+        const node = this.node(
+            label,
+            "action",
+            TreeItemCollapsibleState.None,
+            icon
+        );
         node.command = {command, title: label};
         return node;
     }
 
-    private info(label: string, kind: FoilLabTreeNode["kind"]): FoilLabTreeNode {
-        return this.node(label, kind, TreeItemCollapsibleState.None, "info");
+    private info(
+        label: string,
+        kind: FoilLabTreeNode["kind"]
+    ): FoilLabTreeNode {
+        return this.node(
+            label,
+            kind,
+            TreeItemCollapsibleState.None,
+            "info"
+        );
     }
 
-    private issueNodes(issues: FoilLabValidationIssue[]): FoilLabTreeNode[] {
+    private issueNodes(
+        issues: FoilLabValidationIssue[]
+    ): FoilLabTreeNode[] {
         return issues.map((issue) => {
             const node = this.node(
                 issue.message,
@@ -202,10 +293,17 @@ export class FoilLabTreeDataProvider
         });
     }
 
-    private formatIssues(issues: FoilLabValidationIssue[]): string | undefined {
+    private formatIssues(
+        issues: FoilLabValidationIssue[]
+    ): string | undefined {
         return issues.length === 0
             ? undefined
-            : issues.map((issue) => `${issue.severity}: ${issue.message}`).join("\n");
+            : issues
+                  .map(
+                      (issue) =>
+                          `${issue.severity}: ${issue.message}`
+                  )
+                  .join("\n");
     }
 
     private node(
@@ -214,7 +312,10 @@ export class FoilLabTreeDataProvider
         collapsibleState: TreeItemCollapsibleState,
         icon: string
     ): FoilLabTreeNode {
-        const node = new TreeItem(label, collapsibleState) as FoilLabTreeNode;
+        const node = new TreeItem(
+            label,
+            collapsibleState
+        ) as FoilLabTreeNode;
         node.kind = kind;
         node.iconPath = new ThemeIcon(icon);
         return node;

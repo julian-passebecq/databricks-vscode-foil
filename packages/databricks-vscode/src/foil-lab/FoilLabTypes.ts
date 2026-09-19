@@ -25,6 +25,7 @@ export interface FoilMachineConfig {
     classification: FoilDataClassification;
     modelVersion: string;
     description?: string;
+    parameters?: Record<string, unknown>;
 }
 
 export interface FoilCampaignConfig {
@@ -33,9 +34,11 @@ export interface FoilCampaignConfig {
     machineId: string;
     classification: FoilDataClassification;
     objective: string;
+    test?: Record<string, unknown>;
     analyses: Array<{
         module: string;
         enabled?: boolean;
+        config?: Record<string, unknown>;
     }>;
     outputs?: {
         gold?: boolean;

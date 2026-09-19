@@ -50,19 +50,19 @@
             "properties": {
                 "target": {
                     "type": "string",
-                    "minLength": 1
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
                 },
                 "goldSchema": {
                     "type": "string",
-                    "minLength": 1
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
                 },
                 "labJob": {
                     "type": "string",
-                    "minLength": 1
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
                 },
                 "appResource": {
                     "type": "string",
-                    "minLength": 1
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
                 }
             }
         }

@@ -746,6 +746,12 @@
                 "title": "Create FOIL experiment campaign",
                 "category": "FOIL Lab",
                 "icon": "$(add)"
+            },
+            {
+                "command": "databricks.foilLab.compileCampaign",
+                "title": "Compile FOIL campaign preview",
+                "category": "FOIL Lab",
+                "icon": "$(package)"
             }
         ],
         "viewsContainers": {
@@ -1042,6 +1048,11 @@
                     "command": "databricks.foilLab.createCampaign",
                     "when": "view == foilLabView",
                     "group": "navigation@2"
+                },
+                {
+                    "command": "databricks.foilLab.compileCampaign",
+                    "when": "view == foilLabView",
+                    "group": "navigation@3"
                 }
             ],
             "databricks.cluster.filter": [
