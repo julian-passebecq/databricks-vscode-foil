@@ -80,6 +80,58 @@ export class FoilLabModel {
             return this._state;
         }
 
+        if (
+            project.config?.controlContextFile !== undefined
+        ) {
+            const projectRoot = this.workspaceFolderManager.activeProjectUri.fsPath;
+            const contextPath = path.isAbsolute(project.config.controlContextFile)
+                ? project.config.controlContextFile
+                : path.resolve(projectRoot, project.config.controlContextFile);
+            const contextRaw = await this.readJson(contextPath);
+            if (
+                contextRaw === undefined ||
+                typeof contextRaw !== "object" ||
+                contextRaw === null ||
+                Array.isArray(contextRaw)
+            ) {
+                project.issues.push({
+                    severity: "warning",
+                    path: "controlContextFile",
+                    message:
+                        "FOIL control context could not be loaded. Update controlContextFile or regenerate foil-control-v1/interfaces/databricks/lab_context.json.",
+                });
+            } else {
+                const context = contextRaw as Record<string, unknown>;
+                if (context.schema !== "foil-control/databricks-lab-context-v1") {
+                    project.issues.push({
+                        severity: "warning",
+                        path: "controlContextFile",
+                        message:
+                            "FOIL control context has an unexpected schema.",
+                    });
+                }
+                const activeMachine = context.activeMachine;
+                if (
+                    typeof activeMachine === "object" &&
+                    activeMachine !== null &&
+                    !Array.isArray(activeMachine)
+                ) {
+                    const technology = (activeMachine as Record<string, unknown>).technology;
+                    if (
+                        typeof technology === "string" &&
+                        technology !== project.config.activeTechnology
+                    ) {
+                        project.issues.push({
+                            severity: "warning",
+                            path: "controlContextFile",
+                            message:
+                                "FOIL control context active technology differs from the Databricks project.",
+                        });
+                    }
+                }
+            }
+        }
+
         const machines = await this.readSummaries(
             path.join(root, "machines"),
             (fileName, value): FoilMachineSummary => {
