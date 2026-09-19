@@ -10,6 +10,7 @@ export interface FoilLabProjectConfig {
     activeTechnology: FoilTechnology;
     defaultClassification: FoilDataClassification;
     allowRealData: boolean;
+    controlContextFile?: string;
     databricks: {
         target: string;
         goldSchema: string;
@@ -32,6 +33,7 @@ export interface FoilMachineConfig {
         revision: string;
         importedAt: string;
         snapshotPath?: string;
+        controlDigest?: string;
     };
 }
 
