@@ -3,6 +3,7 @@ import {createHash} from "node:crypto";
 import type {
     FoilCampaignConfig,
     FoilLabProjectConfig,
+    FoilMachineConfig,
 } from "./FoilLabTypes";
 
 export interface FoilCompiledArtifact {
@@ -13,6 +14,7 @@ export interface FoilCompiledArtifact {
 export interface FoilCampaignCompilationPlan {
     campaignId: string;
     sourceHash: string;
+    buildHash: string;
     resourceKey: string;
     artifacts: FoilCompiledArtifact[];
 }
@@ -64,6 +66,7 @@ function pythonLiteralJson(value: unknown): string {
 
 function buildRunner(
     project: FoilLabProjectConfig,
+    machine: FoilMachineConfig,
     campaign: FoilCampaignConfig,
     sourceHash: string
 ): string {
@@ -83,6 +86,7 @@ from pyspark.sql import SparkSession
 
 CAMPAIGN = json.loads(r'''\${pythonLiteralJson(campaign)}''')
 PROJECT = json.loads(r'''\${pythonLiteralJson(project)}''')
+MACHINE = json.loads(r'''\${pythonLiteralJson(machine)}''')
 SOURCE_HASH = "\${sourceHash}"
 
 
@@ -115,6 +119,8 @@ def main():
             source_hash STRING,
             technology STRING,
             machine_id STRING,
+            machine_model_version STRING,
+            machine_json STRING,
             classification STRING,
             objective STRING,
             analysis_modules_json STRING,
@@ -141,6 +147,8 @@ def main():
             SOURCE_HASH,
             CAMPAIGN["technology"],
             CAMPAIGN["machineId"],
+            MACHINE["modelVersion"],
+            json.dumps(MACHINE, sort_keys=True),
             CAMPAIGN["classification"],
             CAMPAIGN["objective"],
             json.dumps(CAMPAIGN.get("analyses", []), sort_keys=True),
@@ -151,7 +159,8 @@ def main():
         registry_rows,
         schema=(
             "campaign_id string, source_hash string, technology string, "
-            "machine_id string, classification string, objective string, "
+            "machine_id string, machine_model_version string, machine_json string, "
+            "classification string, objective string, "
             "analysis_modules_json string, compiled_at_utc string"
         ),
     )
@@ -290,6 +299,7 @@ function buildAppPageIntent(
 
 export function compileCampaign(
     project: FoilLabProjectConfig,
+    machine: FoilMachineConfig,
     campaign: FoilCampaignConfig
 ): FoilCampaignCompilationPlan {
     if (!SAFE_ID.test(campaign.campaignId)) {
@@ -299,8 +309,15 @@ export function compileCampaign(
         throw new Error("Gold schema is not a safe Unity Catalog identifier.");
     }
 
+    if (machine.machineId !== campaign.machineId) {
+        throw new Error("Campaign machineId does not match the supplied machine profile.");
+    }
+
     const sourceHash = createHash("sha256")
-        .update(stableJson({project, campaign}), "utf8")
+        .update(stableJson({machine, campaign}), "utf8")
+        .digest("hex");
+    const buildHash = createHash("sha256")
+        .update(stableJson({project, machine, campaign}), "utf8")
         .digest("hex");
     const resource = resourceKey(campaign.campaignId);
     const manifest = {
@@ -308,8 +325,11 @@ export function compileCampaign(
         campaignId: campaign.campaignId,
         technology: campaign.technology,
         machineId: campaign.machineId,
+        machineModelVersion: machine.modelVersion,
         classification: campaign.classification,
         sourceHash,
+        buildHash,
+        buildHash,
         resourceKey: resource,
         outputContract: {
             campaignRegistry: \`\${project.databricks.goldSchema}.campaign_registry\`,
@@ -336,7 +356,7 @@ export function compileCampaign(
             },
             {
                 relativePath: "src/run_campaign.py",
-                content: buildRunner(project, campaign, sourceHash),
+                content: buildRunner(project, machine, campaign, sourceHash),
             },
             {
                 relativePath: "resources/campaign.job.yml",

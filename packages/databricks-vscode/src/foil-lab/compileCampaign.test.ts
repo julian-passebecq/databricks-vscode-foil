@@ -3,6 +3,7 @@ import assert from "assert";
 import type {
     FoilCampaignConfig,
     FoilLabProjectConfig,
+    FoilMachineConfig,
 } from "./FoilLabTypes";
 import {compileCampaign} from "./compileCampaign";
 
@@ -18,6 +19,14 @@ const project: FoilLabProjectConfig = {
         labJob: "synthetic_lab",
         appResource: "foil_virtual_lab",
     },
+};
+
+const machine: FoilMachineConfig = {
+    machineId: "eolien_lab_v1",
+    technology: "EOLIEN",
+    status: "ACTIVE",
+    classification: "SYNTHETIC",
+    modelVersion: "wind_proxy_v1",
 };
 
 const campaign: FoilCampaignConfig = {
@@ -42,15 +51,15 @@ const campaign: FoilCampaignConfig = {
 
 describe("compileCampaign", () => {
     it("is deterministic for the same project and campaign", () => {
-        const first = compileCampaign(project, campaign);
-        const second = compileCampaign(project, campaign);
+        const first = compileCampaign(project, machine, campaign);
+        const second = compileCampaign(project, machine, campaign);
 
         assert.strictEqual(first.sourceHash, second.sourceHash);
         assert.deepStrictEqual(first.artifacts, second.artifacts);
     });
 
     it("generates a serverless Python job and safe metadata runner", () => {
-        const plan = compileCampaign(project, campaign);
+        const plan = compileCampaign(project, machine, campaign);
         const job = plan.artifacts.find(
             (artifact) => artifact.relativePath === "resources/campaign.job.yml"
         );
@@ -65,12 +74,38 @@ describe("compileCampaign", () => {
     });
 
     it("changes the source hash when the campaign changes", () => {
-        const first = compileCampaign(project, campaign);
-        const second = compileCampaign(project, {
+        const first = compileCampaign(project, machine, campaign);
+        const second = compileCampaign(project, machine, {
             ...campaign,
             objective: "A different experiment.",
         });
 
         assert.notStrictEqual(first.sourceHash, second.sourceHash);
+    });
+
+    it("changes the study hash when the machine version changes", () => {
+        const first = compileCampaign(project, machine, campaign);
+        const second = compileCampaign(
+            project,
+            {...machine, modelVersion: "wind_proxy_v2"},
+            campaign
+        );
+
+        assert.notStrictEqual(first.sourceHash, second.sourceHash);
+    });
+
+    it("keeps the study hash stable when only deployment settings change", () => {
+        const first = compileCampaign(project, machine, campaign);
+        const second = compileCampaign(
+            {
+                ...project,
+                databricks: {...project.databricks, target: "other_dev"},
+            },
+            machine,
+            campaign
+        );
+
+        assert.strictEqual(first.sourceHash, second.sourceHash);
+        assert.notStrictEqual(first.buildHash, second.buildHash);
     });
 });

@@ -66,10 +66,11 @@ export const EXAMPLE_CAMPAIGN = {
 export const ANALYSIS_REGISTRY = {
     version: "0.1",
     modules: [
-        {id: "descriptive_statistics", status: "READY"},
-        {id: "parameter_sweep", status: "READY"},
-        {id: "correlation", status: "READY"},
-        {id: "regression", status: "READY"},
+        {id: "campaign_contract", status: "READY"},
+        {id: "descriptive_statistics", status: "PLANNED"},
+        {id: "parameter_sweep", status: "PLANNED"},
+        {id: "correlation", status: "PLANNED"},
+        {id: "regression", status: "PLANNED"},
         {id: "anomaly_detection", status: "PLANNED"},
         {id: "forecasting", status: "PLANNED"},
         {id: "monte_carlo", status: "PLANNED"},

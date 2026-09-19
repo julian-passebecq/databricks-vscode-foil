@@ -118,6 +118,9 @@ export class FoilLabManager implements Disposable {
         const campaign = this.model.state.campaigns.find(
             (item) => item.config?.campaignId === campaignId
         );
+        const machine = this.model.state.machines.find(
+            (item) => item.config?.machineId === campaign?.config?.machineId
+        );
 
         if (root === undefined || project === undefined) {
             throw new Error("Initialize the FOIL Lab before compiling a campaign.");
@@ -127,8 +130,13 @@ export class FoilLabManager implements Disposable {
                 "The campaign is missing or has validation errors. Fix its JSON before compiling."
             );
         }
+        if (machine?.config === undefined) {
+            throw new Error(
+                "The campaign references a missing or invalid machine profile."
+            );
+        }
 
-        const plan = buildCampaign(project, campaign.config);
+        const plan = buildCampaign(project, machine.config, campaign.config);
         const buildRoot = path.join(root, "build", plan.campaignId);
         await rm(buildRoot, {recursive: true, force: true});
 
