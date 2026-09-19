@@ -1,0 +1,121 @@
+import {Event, EventEmitter} from "vscode";
+import {readdir, readFile} from "node:fs/promises";
+import path from "node:path";
+
+import {WorkspaceFolderManager} from "../vscode-objs/WorkspaceFolderManager";
+import type {
+    FoilCampaignSummary,
+    FoilLabState,
+    FoilMachineSummary,
+} from "./FoilLabTypes";
+import {
+    validateCampaignConfig,
+    validateMachineConfig,
+    validateProjectConfig,
+} from "./foilLabValidation";
+
+const EMPTY_STATE: FoilLabState = {
+    initialized: false,
+    projectIssues: [],
+    machines: [],
+    campaigns: [],
+};
+
+export class FoilLabModel {
+    private _state: FoilLabState = EMPTY_STATE;
+    private readonly _onDidChangeState = new EventEmitter<FoilLabState>();
+    readonly onDidChangeState: Event<FoilLabState> = this._onDidChangeState.event;
+
+    constructor(private readonly workspaceFolderManager: WorkspaceFolderManager) {}
+
+    get state(): FoilLabState {
+        return this._state;
+    }
+
+    get labRootPath(): string {
+        return path.join(this.workspaceFolderManager.activeProjectUri.fsPath, ".foil-lab");
+    }
+
+    get projectConfigPath(): string {
+        return path.join(this.labRootPath, "project.json");
+    }
+
+    get appSpecPath(): string {
+        return path.join(this.labRootPath, "ui", "app.json");
+    }
+
+    async refresh(): Promise<FoilLabState> {
+        const projectRaw = await this.readJson(this.projectConfigPath);
+        if (projectRaw === undefined) {
+            this.setState(EMPTY_STATE);
+            return this._state;
+        }
+
+        const project = validateProjectConfig(projectRaw);
+        const machines = await this.readSummaries(
+            path.join(this.labRootPath, "machines"),
+            (fileName, value): FoilMachineSummary => {
+                const validation = validateMachineConfig(value);
+                return {fileName, ...validation};
+            }
+        );
+        const campaigns = await this.readSummaries(
+            path.join(this.labRootPath, "campaigns"),
+            (fileName, value): FoilCampaignSummary => {
+                const validation = validateCampaignConfig(value);
+                return {fileName, ...validation};
+            }
+        );
+
+        this.setState({
+            initialized: true,
+            project: project.config,
+            projectIssues: project.issues,
+            machines,
+            campaigns,
+        });
+        return this._state;
+    }
+
+    private async readSummaries<T>(
+        directory: string,
+        parse: (fileName: string, value: unknown) => T
+    ): Promise<T[]> {
+        let entries;
+        try {
+            entries = await readdir(directory, {withFileTypes: true});
+        } catch {
+            return [];
+        }
+
+        const jsonFiles = entries
+            .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        const result: T[] = [];
+        for (const entry of jsonFiles) {
+            const value = await this.readJson(path.join(directory, entry.name));
+            if (value !== undefined) {
+                result.push(parse(entry.name, value));
+            }
+        }
+        return result;
+    }
+
+    private async readJson(filePath: string): Promise<unknown | undefined> {
+        try {
+            return JSON.parse(await readFile(filePath, "utf8")) as unknown;
+        } catch {
+            return undefined;
+        }
+    }
+
+    private setState(state: FoilLabState): void {
+        this._state = state;
+        this._onDidChangeState.fire(state);
+    }
+
+    dispose(): void {
+        this._onDidChangeState.dispose();
+    }
+}

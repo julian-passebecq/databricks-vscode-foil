@@ -1,0 +1,49 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://foil.local/schemas/app.schema.json",
+    "title": "FOIL Virtual Lab App",
+    "type": "object",
+    "required": [
+        "version",
+        "appId",
+        "framework",
+        "deployment",
+        "goldSchema",
+        "pages"
+    ],
+    "properties": {
+        "version": {
+            "type": "string",
+            "minLength": 1
+        },
+        "appId": {
+            "type": "string",
+            "minLength": 1
+        },
+        "framework": {
+            "const": "STREAMLIT"
+        },
+        "deployment": {
+            "enum": [
+                "DATABRICKS_APP",
+                "EXTERNAL"
+            ]
+        },
+        "goldSchema": {
+            "type": "string",
+            "minLength": 1
+        },
+        "canLaunchCampaigns": {
+            "type": "boolean"
+        },
+        "pages": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true
+        }
+    },
+    "additionalProperties": true
+}

@@ -1,0 +1,72 @@
+export type FoilTechnology = "EOLIEN" | "HYDROLIEN" | "PROPULSION";
+
+export type FoilMachineStatus = "ACTIVE" | "REFERENCE_ONLY" | "EXPERIMENTAL";
+
+export type FoilDataClassification = "SYNTHETIC" | "SANITIZED_APPROVED";
+
+export interface FoilLabProjectConfig {
+    version: string;
+    name: string;
+    activeTechnology: FoilTechnology;
+    defaultClassification: FoilDataClassification;
+    allowRealData: boolean;
+    databricks: {
+        target: string;
+        goldSchema: string;
+        labJob: string;
+        appResource: string;
+    };
+}
+
+export interface FoilMachineConfig {
+    machineId: string;
+    technology: FoilTechnology;
+    status: FoilMachineStatus;
+    classification: FoilDataClassification;
+    modelVersion: string;
+    description?: string;
+}
+
+export interface FoilCampaignConfig {
+    campaignId: string;
+    technology: FoilTechnology;
+    machineId: string;
+    classification: FoilDataClassification;
+    objective: string;
+    analyses: Array<{
+        module: string;
+        enabled?: boolean;
+    }>;
+    outputs?: {
+        gold?: boolean;
+        aiBiDashboard?: boolean;
+        streamlitApp?: boolean;
+        mlflow?: boolean;
+    };
+}
+
+export interface FoilLabValidationIssue {
+    severity: "error" | "warning";
+    path: string;
+    message: string;
+}
+
+export interface FoilMachineSummary {
+    fileName: string;
+    config?: FoilMachineConfig;
+    issues: FoilLabValidationIssue[];
+}
+
+export interface FoilCampaignSummary {
+    fileName: string;
+    config?: FoilCampaignConfig;
+    issues: FoilLabValidationIssue[];
+}
+
+export interface FoilLabState {
+    initialized: boolean;
+    project?: FoilLabProjectConfig;
+    projectIssues: FoilLabValidationIssue[];
+    machines: FoilMachineSummary[];
+    campaigns: FoilCampaignSummary[];
+}

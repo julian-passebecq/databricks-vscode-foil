@@ -1,0 +1,47 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://foil.local/schemas/analysis-registry.schema.json",
+    "title": "FOIL Analysis Module Registry",
+    "type": "object",
+    "required": [
+        "version",
+        "modules"
+    ],
+    "properties": {
+        "version": {
+            "type": "string",
+            "minLength": 1
+        },
+        "modules": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "status": {
+                        "enum": [
+                            "READY",
+                            "PLANNED",
+                            "DISABLED"
+                        ]
+                    },
+                    "entrypoint": {
+                        "type": "string"
+                    },
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": true
+            }
+        }
+    },
+    "additionalProperties": false
+}

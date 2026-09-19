@@ -680,6 +680,72 @@
                 "category": "Databricks",
                 "enablement": "databricks.context.activated && databricks.context.loggedIn && databricks.context.bundle.isTargetSet && databricks.context.bundle.isDevTarget && !databricks.context.remoteMode",
                 "icon": "$(sync-ignored)"
+            },
+            {
+                "command": "databricks.foilLab.initialize",
+                "title": "Initialize FOIL Virtual Lab",
+                "category": "FOIL Lab",
+                "icon": "$(new-folder)"
+            },
+            {
+                "command": "databricks.foilLab.refresh",
+                "title": "Refresh FOIL Virtual Lab",
+                "category": "FOIL Lab",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "databricks.foilLab.validate",
+                "title": "Validate FOIL configuration",
+                "category": "FOIL Lab",
+                "icon": "$(check-all)"
+            },
+            {
+                "command": "databricks.foilLab.validateBundle",
+                "title": "Validate Databricks bundle",
+                "category": "FOIL Lab",
+                "icon": "$(check)"
+            },
+            {
+                "command": "databricks.foilLab.deploy",
+                "title": "Deploy FOIL bundle",
+                "category": "FOIL Lab",
+                "icon": "$(cloud-upload)"
+            },
+            {
+                "command": "databricks.foilLab.deployAndRun",
+                "title": "Deploy and run FOIL resource",
+                "category": "FOIL Lab",
+                "icon": "$(run)"
+            },
+            {
+                "command": "databricks.foilLab.configureLogin",
+                "title": "Configure FOIL Databricks workspace",
+                "category": "FOIL Lab",
+                "icon": "$(account)"
+            },
+            {
+                "command": "databricks.foilLab.focusGold",
+                "title": "Open FOIL Gold in Unity Catalog",
+                "category": "FOIL Lab",
+                "icon": "$(database)"
+            },
+            {
+                "command": "databricks.foilLab.openProjectConfig",
+                "title": "Open FOIL Lab project configuration",
+                "category": "FOIL Lab",
+                "icon": "$(json)"
+            },
+            {
+                "command": "databricks.foilLab.openAppSpec",
+                "title": "Open FOIL Streamlit app specification",
+                "category": "FOIL Lab",
+                "icon": "$(browser)"
+            },
+            {
+                "command": "databricks.foilLab.createCampaign",
+                "title": "Create FOIL experiment campaign",
+                "category": "FOIL Lab",
+                "icon": "$(add)"
             }
         ],
         "viewsContainers": {
@@ -693,6 +759,12 @@
         },
         "views": {
             "databricksBar": [
+                {
+                    "id": "foilLabView",
+                    "name": "FOIL Virtual Lab",
+                    "visibility": "visible",
+                    "when": "!databricks.context.remoteMode"
+                },
                 {
                     "id": "configurationView",
                     "name": "Configuration",
@@ -960,6 +1032,16 @@
                     "command": "databricks.bundle.variable.reset",
                     "when": "view == dabsVariableView && databricks.context.bundle.deploymentState == idle",
                     "group": "navigation@1"
+                },
+                {
+                    "command": "databricks.foilLab.refresh",
+                    "when": "view == foilLabView",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "databricks.foilLab.createCampaign",
+                    "when": "view == foilLabView",
+                    "group": "navigation@2"
                 }
             ],
             "databricks.cluster.filter": [
@@ -1858,6 +1940,28 @@
                         "description": "The interval in minutes at which the remote state of the bundle is refreshed."
                     }
                 }
+            }
+        ],
+        "jsonValidation": [
+            {
+                "fileMatch": "**/.foil-lab/project.json",
+                "url": "./resources/foil-lab/schemas/project.schema.json"
+            },
+            {
+                "fileMatch": "**/.foil-lab/machines/*.json",
+                "url": "./resources/foil-lab/schemas/machine.schema.json"
+            },
+            {
+                "fileMatch": "**/.foil-lab/campaigns/*.json",
+                "url": "./resources/foil-lab/schemas/campaign.schema.json"
+            },
+            {
+                "fileMatch": "**/.foil-lab/ui/app.json",
+                "url": "./resources/foil-lab/schemas/app.schema.json"
+            },
+            {
+                "fileMatch": "**/.foil-lab/analysis-modules/registry.json",
+                "url": "./resources/foil-lab/schemas/analysis-registry.schema.json"
             }
         ]
     },
