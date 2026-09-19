@@ -99,6 +99,36 @@ export class FoilLabCommands {
         await this.openFile(this.model.appSpecPath);
     };
 
+    importControlMachine = async (): Promise<void> => {
+        try {
+            if (!this.model.state.initialized) {
+                await this.manager.initializeProject();
+            }
+            const selected = await window.showOpenDialog({
+                canSelectMany: false,
+                canSelectFiles: true,
+                canSelectFolders: false,
+                title: "Import FOIL company machine snapshot",
+                openLabel: "Import machine snapshot",
+                filters: {"FOIL machine snapshot": ["json"]},
+            });
+            if (!selected?.[0]) {
+                return;
+            }
+            const target = await this.manager.importControlMachineSnapshot(
+                selected[0].fsPath
+            );
+            await this.openFile(target);
+            window.showInformationMessage(
+                "FOIL wind machine synchronized from the company control snapshot. Databricks campaigns remain synthetic until evidence is approved upstream."
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to import FOIL control machine: ${(e as Error).message}`
+            );
+        }
+    };
+
     createCampaign = async (): Promise<void> => {
         try {
             if (!this.model.state.initialized) {
