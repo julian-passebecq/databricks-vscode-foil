@@ -72,6 +72,18 @@ export function validateProjectConfig(value: unknown): {
             )
         );
     }
+    if (
+        value.controlContextFile !== undefined &&
+        (typeof value.controlContextFile !== "string" ||
+            value.controlContextFile.trim().length === 0)
+    ) {
+        issues.push(
+            error(
+                "controlContextFile",
+                "controlContextFile must be a non-empty local path when provided."
+            )
+        );
+    }
     if (value.allowRealData !== false) {
         issues.push(
             error(
