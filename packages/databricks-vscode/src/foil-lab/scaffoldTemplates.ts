@@ -52,7 +52,7 @@ export const EXAMPLE_CAMPAIGN = {
     },
     analyses: [
         {module: "descriptive_statistics", enabled: true},
-        {module: "parameter_sweep", enabled: true},
+        {module: "parameter_sweep", enabled: false},
         {module: "regression", enabled: false},
     ],
     outputs: {
@@ -67,7 +67,7 @@ export const ANALYSIS_REGISTRY = {
     version: "0.1",
     modules: [
         {id: "campaign_contract", status: "READY"},
-        {id: "descriptive_statistics", status: "PLANNED"},
+        {id: "descriptive_statistics", status: "READY"},
         {id: "parameter_sweep", status: "PLANNED"},
         {id: "correlation", status: "PLANNED"},
         {id: "regression", status: "PLANNED"},

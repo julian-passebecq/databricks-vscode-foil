@@ -5,6 +5,11 @@ import type {
     FoilLabProjectConfig,
     FoilMachineConfig,
 } from "./FoilLabTypes";
+import {
+    buildAnalysisTaskYaml,
+    buildDescriptiveStatisticsRunner,
+    isAnalysisEnabled,
+} from "./analysisModules";
 
 export interface FoilCompiledArtifact {
     relativePath: string;
@@ -242,42 +247,51 @@ function buildJobYaml(
     campaign: FoilCampaignConfig,
     resource: string
 ): string {
-    return \`resources:
+    return `resources:
   jobs:
-    \${resource}:
-      name: \${yamlQuote(\`FOIL Campaign - \${campaign.campaignId}\`)}
-      description: \${yamlQuote("Generated FOIL campaign contract registration job")}
+    ${resource}:
+      name: ${yamlQuote(`FOIL Campaign - ${campaign.campaignId}`)}
+      description: ${yamlQuote("Generated FOIL campaign job")}
       tasks:
         - task_key: register_campaign_contract
           spark_python_task:
             python_file: ../src/run_campaign.py
-          environment_key: default
+          environment_key: default${buildAnalysisTaskYaml(campaign)}
       environments:
         - environment_key: default
           spec:
             environment_version: "2"
-\`;
+`;
 }
 
 function buildDashboardIntent(
     project: FoilLabProjectConfig,
     campaign: FoilCampaignConfig
 ): unknown {
+    const datasets: Array<Record<string, unknown>> = [
+        {
+            id: "campaign_registry",
+            table: `${project.databricks.goldSchema}.campaign_registry`,
+        },
+        {
+            id: "campaign_parameters",
+            table: `${project.databricks.goldSchema}.campaign_parameters`,
+        },
+    ];
+    if (isAnalysisEnabled(campaign, "descriptive_statistics")) {
+        datasets.push({
+            id: "campaign_design_statistics",
+            table: `${project.databricks.goldSchema}.campaign_design_statistics`,
+            scope: "EXPERIMENT_DESIGN_PARAMETERS",
+        });
+    }
+
     return {
         version: "0.1",
         campaignId: campaign.campaignId,
         enabled: campaign.outputs?.aiBiDashboard === true,
         goldSchema: project.databricks.goldSchema,
-        datasets: [
-            {
-                id: "campaign_registry",
-                table: \`\${project.databricks.goldSchema}.campaign_registry\`,
-            },
-            {
-                id: "campaign_parameters",
-                table: \`\${project.databricks.goldSchema}.campaign_parameters\`,
-            },
-        ],
+        datasets,
         note: "Intent only. A later compiler stage emits the .lvdash.json asset.",
     };
 }
@@ -286,13 +300,18 @@ function buildAppPageIntent(
     project: FoilLabProjectConfig,
     campaign: FoilCampaignConfig
 ): unknown {
+    const sections = ["campaign_contract", "parameters", "analysis_plan"];
+    if (isAnalysisEnabled(campaign, "descriptive_statistics")) {
+        sections.push("design_statistics");
+    }
+
     return {
         version: "0.1",
         campaignId: campaign.campaignId,
         enabled: campaign.outputs?.streamlitApp === true,
         appResource: project.databricks.appResource,
         goldSchema: project.databricks.goldSchema,
-        sections: ["campaign_contract", "parameters", "analysis_plan"],
+        sections,
         note: "Consumed by the persistent FOIL Streamlit app; not a standalone app.",
     };
 }
@@ -320,8 +339,13 @@ export function compileCampaign(
         .update(stableJson({project, machine, campaign}), "utf8")
         .digest("hex");
     const resource = resourceKey(campaign.campaignId);
+    const descriptiveStatistics = buildDescriptiveStatisticsRunner(
+        project,
+        campaign,
+        sourceHash
+    );
     const manifest = {
-        compilerVersion: "0.1",
+        compilerVersion: "0.2",
         campaignId: campaign.campaignId,
         technology: campaign.technology,
         machineId: campaign.machineId,
@@ -329,51 +353,76 @@ export function compileCampaign(
         classification: campaign.classification,
         sourceHash,
         buildHash,
-        buildHash,
         resourceKey: resource,
         outputContract: {
-            campaignRegistry: \`\${project.databricks.goldSchema}.campaign_registry\`,
-            campaignParameters: \`\${project.databricks.goldSchema}.campaign_parameters\`,
+            campaignRegistry: `${project.databricks.goldSchema}.campaign_registry`,
+            campaignParameters: `${project.databricks.goldSchema}.campaign_parameters`,
+            designStatistics:
+                descriptiveStatistics === undefined
+                    ? undefined
+                    : `${project.databricks.goldSchema}.campaign_design_statistics`,
         },
+        analysisModules: campaign.analyses.map((analysis) => ({
+            id: analysis.module,
+            enabled: analysis.enabled !== false,
+            compiled:
+                analysis.module === "descriptive_statistics"
+                    ? descriptiveStatistics !== undefined
+                    : false,
+        })),
         safety: {
             executesArbitraryImportedScripts: false,
-            scientificResultsGeneratedByThisStage: false,
+            engineeringResultsGeneratedByThisStage: false,
+            analysisScope:
+                descriptiveStatistics === undefined
+                    ? "CAMPAIGN_CONTRACT_ONLY"
+                    : "EXPERIMENT_DESIGN_PARAMETERS",
         },
     };
+
+    const artifacts: FoilCompiledArtifact[] = [
+        {
+            relativePath: "manifest.json",
+            content: prettyJson(manifest),
+        },
+        {
+            relativePath: "campaign.json",
+            content: prettyJson(campaign),
+        },
+        {
+            relativePath: "src/run_campaign.py",
+            content: buildRunner(project, machine, campaign, sourceHash),
+        },
+        {
+            relativePath: "resources/campaign.job.yml",
+            content: buildJobYaml(campaign, resource),
+        },
+        {
+            relativePath: "dashboard/dashboard-intent.json",
+            content: prettyJson(buildDashboardIntent(project, campaign)),
+        },
+        {
+            relativePath: "ui/campaign-page.json",
+            content: prettyJson(buildAppPageIntent(project, campaign)),
+        },
+        {
+            relativePath: "bundle-include.txt",
+            content: `include:\n  - .foil-lab/build/${campaign.campaignId}/resources/campaign.job.yml\n`,
+        },
+    ];
+
+    if (descriptiveStatistics !== undefined) {
+        artifacts.push({
+            relativePath: "src/analyses/descriptive_statistics.py",
+            content: descriptiveStatistics,
+        });
+    }
 
     return {
         campaignId: campaign.campaignId,
         sourceHash,
+        buildHash,
         resourceKey: resource,
-        artifacts: [
-            {
-                relativePath: "manifest.json",
-                content: prettyJson(manifest),
-            },
-            {
-                relativePath: "campaign.json",
-                content: prettyJson(campaign),
-            },
-            {
-                relativePath: "src/run_campaign.py",
-                content: buildRunner(project, machine, campaign, sourceHash),
-            },
-            {
-                relativePath: "resources/campaign.job.yml",
-                content: buildJobYaml(campaign, resource),
-            },
-            {
-                relativePath: "dashboard/dashboard-intent.json",
-                content: prettyJson(buildDashboardIntent(project, campaign)),
-            },
-            {
-                relativePath: "ui/campaign-page.json",
-                content: prettyJson(buildAppPageIntent(project, campaign)),
-            },
-            {
-                relativePath: "bundle-include.txt",
-                content: \`include:\\n  - ./.foil-lab/build/\${campaign.campaignId}/resources/campaign.job.yml\\n\`,
-            },
-        ],
+        artifacts,
     };
 }

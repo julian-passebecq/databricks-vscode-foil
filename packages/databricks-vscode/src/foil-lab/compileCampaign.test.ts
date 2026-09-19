@@ -66,11 +66,22 @@ describe("compileCampaign", () => {
         const runner = plan.artifacts.find(
             (artifact) => artifact.relativePath === "src/run_campaign.py"
         );
+        const statistics = plan.artifacts.find(
+            (artifact) =>
+                artifact.relativePath ===
+                "src/analyses/descriptive_statistics.py"
+        );
 
         assert.ok(job?.content.includes("environment_key: default"));
         assert.ok(job?.content.includes("spark_python_task:"));
         assert.ok(runner?.content.includes("campaign_registry"));
         assert.ok(runner?.content.includes("statistical, or ML results"));
+        assert.ok(job?.content.includes("task_key: descriptive_statistics"));
+        assert.ok(job?.content.includes("depends_on:"));
+        assert.ok(statistics?.content.includes("campaign_design_statistics"));
+        assert.ok(
+            statistics?.content.includes("EXPERIMENT_DESIGN_PARAMETERS")
+        );
     });
 
     it("changes the source hash when the campaign changes", () => {
