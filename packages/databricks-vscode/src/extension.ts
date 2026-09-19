@@ -814,6 +814,11 @@ export async function activate(
             foilLabCommands
         ),
         telemetry.registerCommand(
+            "databricks.foilLab.importControlMachine",
+            foilLabCommands.importControlMachine,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
             "databricks.foilLab.createCampaign",
             foilLabCommands.createCampaign,
             foilLabCommands
