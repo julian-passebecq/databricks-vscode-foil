@@ -278,7 +278,7 @@ def main():
         scenario_frame.createOrReplaceTempView("foil_campaign_scenarios")
         spark.sql(
             f"""
-            MERGE INTO `{gold_schema}`.campaign_scenarios target
+            MERGE INTO \`{gold_schema}\`.campaign_scenarios target
             USING foil_campaign_scenarios source
             ON target.campaign_id = source.campaign_id
                AND target.source_hash = source.source_hash
@@ -317,7 +317,7 @@ def main():
         scenario_parameters.createOrReplaceTempView("foil_scenario_parameters")
         spark.sql(
             f"""
-            MERGE INTO `{gold_schema}`.scenario_parameters target
+            MERGE INTO \`{gold_schema}\`.scenario_parameters target
             USING foil_scenario_parameters source
             ON target.campaign_id = source.campaign_id
                AND target.source_hash = source.source_hash
