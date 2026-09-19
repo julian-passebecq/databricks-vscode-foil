@@ -23,3 +23,13 @@ The next layers are live Free Edition capability probes, richer Gold query/resul
 ## Gold query contract
 
 Compiled campaigns also emit a read-only query pack under `.foil-lab/build/<campaign>/queries/`. The catalog records dataset grain and relationships while the SQL files provide standard campaign, scenario, parameter, and design-statistics queries. Streamlit, AI/BI generation, VS Code result panels, and external AI handoffs should reuse this contract instead of inventing independent joins.
+
+## Company control repository bridge
+
+The company/project source of truth lives outside Databricks in `julian-passebecq/foil-control-v1`.
+
+The bridge is intentionally file-based:
+
+`foil-control-v1/interfaces/databricks/active_machine.json` → **FOIL Lab: Import FOIL company machine snapshot** → `.foil-lab/machines/eolien_lab_v1.json`.
+
+The imported profile records the control-machine ID and revision inside the Databricks project. Databricks campaigns may vary synthetic scenario parameters, but they do not write engineering facts back into the company control repository.
