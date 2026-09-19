@@ -27,6 +27,13 @@ const machine: FoilMachineConfig = {
     status: "ACTIVE",
     classification: "SYNTHETIC",
     modelVersion: "wind_proxy_v1",
+    control: {
+        sourceRepo: "julian-passebecq/foil-control-v1",
+        controlMachineId: "MACHINE-WIND-001",
+        revision: "2026-09-19.1",
+        importedAt: "2026-09-20T00:00:00Z",
+        controlDigest: "abc123",
+    },
 };
 
 const campaign: FoilCampaignConfig = {
@@ -95,6 +102,12 @@ describe("compileCampaign", () => {
         assert.ok(dashboard?.content.includes("campaign_scenarios"));
         assert.ok(dashboard?.content.includes("scenario_parameters"));
         assert.ok(appPage?.content.includes("scenario_matrix"));
+
+        const manifest = plan.artifacts.find(
+            (artifact) => artifact.relativePath === "manifest.json"
+        );
+        assert.ok(manifest?.content.includes('"controlMachineId": "MACHINE-WIND-001"'));
+        assert.ok(manifest?.content.includes('"controlDigest": "abc123"'));
 
         const queryCatalog = plan.artifacts.find(
             (artifact) => artifact.relativePath === "queries/catalog.json"
