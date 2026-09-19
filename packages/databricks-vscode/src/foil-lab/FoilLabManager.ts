@@ -108,9 +108,10 @@ export class FoilLabManager implements Disposable {
             status?: string;
             machineRevision?: string;
             referenceFacts?: unknown[];
-            simulationParameters?: string[];
+            simulationParameters?: Array<string | {id?: string}>;
             unresolvedEngineering?: string[];
             rules?: string[];
+            controlDigest?: string;
         };
         if (
             raw.schema !== "foil-control/databricks-machine-snapshot-v1" ||
@@ -138,10 +139,13 @@ export class FoilLabManager implements Disposable {
                 revision: raw.machineRevision,
                 importedAt: new Date().toISOString(),
                 snapshotPath,
+                controlDigest: raw.controlDigest,
             },
             parameters: {
                 referenceFacts: raw.referenceFacts ?? [],
-                simulationParameterIds: raw.simulationParameters ?? [],
+                simulationParameterIds: (raw.simulationParameters ?? [])
+                    .map((item) => typeof item === "string" ? item : item.id)
+                    .filter((item): item is string => typeof item === "string"),
                 unresolvedEngineering: raw.unresolvedEngineering ?? [],
                 controlRules: raw.rules ?? [],
             },
