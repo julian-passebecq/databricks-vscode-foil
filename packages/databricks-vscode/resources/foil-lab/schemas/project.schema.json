@@ -22,10 +22,17 @@
             "minLength": 1
         },
         "activeTechnology": {
-            "enum": ["EOLIEN", "HYDROLIEN", "PROPULSION"]
+            "enum": [
+                "EOLIEN",
+                "HYDROLIEN",
+                "PROPULSION"
+            ]
         },
         "defaultClassification": {
-            "enum": ["SYNTHETIC", "SANITIZED_APPROVED"]
+            "enum": [
+                "SYNTHETIC",
+                "SANITIZED_APPROVED"
+            ]
         },
         "allowRealData": {
             "const": false,
@@ -34,7 +41,12 @@
         "databricks": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["target", "goldSchema", "labJob", "appResource"],
+            "required": [
+                "target",
+                "goldSchema",
+                "labJob",
+                "appResource"
+            ],
             "properties": {
                 "target": {
                     "type": "string",
@@ -53,6 +65,11 @@
                     "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
                 }
             }
+        },
+        "controlContextFile": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional local path, relative to the Databricks project root or absolute, to foil-control-v1/interfaces/databricks/lab_context.json."
         }
     }
 }
