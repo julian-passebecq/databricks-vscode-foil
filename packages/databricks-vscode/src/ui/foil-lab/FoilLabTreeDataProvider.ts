@@ -186,6 +186,11 @@ export class FoilLabTreeDataProvider
                 "Compile campaign preview",
                 "databricks.foilLab.compileCampaign",
                 "package"
+            ),
+            this.action(
+                "Apply campaign to bundle",
+                "databricks.foilLab.applyCampaign",
+                "git-merge"
             )
         );
         return campaigns;
@@ -227,6 +232,11 @@ export class FoilLabTreeDataProvider
                 "Compile campaign preview",
                 "databricks.foilLab.compileCampaign",
                 "package"
+            ),
+            this.action(
+                "Apply campaign to bundle",
+                "databricks.foilLab.applyCampaign",
+                "git-merge"
             ),
             this.action(
                 "Validate Databricks bundle",

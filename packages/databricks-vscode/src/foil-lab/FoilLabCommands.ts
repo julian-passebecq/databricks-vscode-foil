@@ -1,6 +1,6 @@
 import {commands, Uri, window, workspace} from "vscode";
 
-import {BundleValidateModel} from "../bundle/models/BundleValidateModel";
+import type {BundleValidateModel} from "../bundle/models/BundleValidateModel";
 import {FoilLabManager} from "./FoilLabManager";
 import {FoilLabModel} from "./FoilLabModel";
 
@@ -97,22 +97,23 @@ export class FoilLabCommands {
     };
 
     createCampaign = async (): Promise<void> => {
-        if (!this.model.state.initialized) {
-            await this.manager.initializeProject();
-        }
-        const campaignId = await window.showInputBox({
-            title: "Create FOIL campaign",
-            prompt: "Campaign id used for the version-controlled JSON file",
-            placeHolder: "wind_turbulence_sensitivity_001",
-            validateInput: (value) =>
-                value.trim().length === 0
-                    ? "Campaign id is required."
-                    : undefined,
-        });
-        if (campaignId === undefined) {
-            return;
-        }
         try {
+            if (!this.model.state.initialized) {
+                await this.manager.initializeProject();
+            }
+            const campaignId = await window.showInputBox({
+                title: "Create FOIL campaign",
+                prompt: "Campaign id used for the version-controlled JSON file",
+                placeHolder: "wind_turbulence_sensitivity_001",
+                validateInput: (value) =>
+                    value.trim().length === 0
+                        ? "Campaign id is required."
+                        : undefined,
+            });
+            if (campaignId === undefined) {
+                return;
+            }
+
             const filePath = await this.manager.createCampaign(campaignId);
             await this.openFile(filePath);
         } catch (e) {
@@ -123,15 +124,77 @@ export class FoilLabCommands {
     };
 
     compileCampaign = async (): Promise<void> => {
+        const campaignId = await this.pickCampaign("Compile FOIL campaign");
+        if (campaignId === undefined) {
+            return;
+        }
+
+        try {
+            const manifestPath = await this.manager.compileCampaign(campaignId);
+            await this.openFile(manifestPath);
+            window.showInformationMessage(
+                `FOIL campaign ${campaignId} compiled to .foil-lab/build. Review before adding it to the bundle.`
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to compile FOIL campaign: ${(e as Error).message}`
+            );
+        }
+    };
+
+    applyCampaign = async (): Promise<void> => {
+        const campaignId = await this.pickCampaign(
+            "Apply FOIL campaign to Databricks bundle"
+        );
+        if (campaignId === undefined) {
+            return;
+        }
+
+        const confirmation = await window.showWarningMessage(
+            `Apply ${campaignId} to the active Databricks bundle? This updates the bundle include list but does not deploy anything.`,
+            {modal: true},
+            "Apply"
+        );
+        if (confirmation !== "Apply") {
+            return;
+        }
+
+        try {
+            const result = await this.manager.applyCampaign(campaignId);
+            let validationMessage =
+                "Bundle target is not configured; validate before deployment.";
+            if (
+                this.bundleValidateModel.target &&
+                this.bundleValidateModel.authProvider
+            ) {
+                await this.bundleValidateModel.refresh();
+                validationMessage = "Databricks bundle validation passed.";
+            }
+
+            window.showInformationMessage(
+                result.changed
+                    ? `FOIL campaign ${campaignId} added to ${result.bundleFile}. ${validationMessage}`
+                    : `FOIL campaign ${campaignId} is already included. ${validationMessage}`
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to apply FOIL campaign: ${(e as Error).message}`
+            );
+        }
+    };
+
+    private async pickCampaign(
+        title: string
+    ): Promise<string | undefined> {
         const state = await this.model.refresh();
         const validCampaigns = state.campaigns.filter(
             (campaign) => campaign.config !== undefined
         );
         if (validCampaigns.length === 0) {
             window.showWarningMessage(
-                "No valid FOIL campaign is available to compile."
+                "No valid FOIL campaign is available."
             );
-            return;
+            return undefined;
         }
 
         const selected = await window.showQuickPick(
@@ -140,29 +203,13 @@ export class FoilLabCommands {
                 description: campaign.config!.objective,
             })),
             {
-                title: "Compile FOIL campaign",
+                title,
                 placeHolder:
-                    "Generate a safe DAB/Gold/UI preview without deploying it",
+                    "Select a validated campaign from .foil-lab/campaigns",
             }
         );
-        if (selected === undefined) {
-            return;
-        }
-
-        try {
-            const manifestPath = await this.manager.compileCampaign(
-                selected.label
-            );
-            await this.openFile(manifestPath);
-            window.showInformationMessage(
-                `FOIL campaign ${selected.label} compiled to .foil-lab/build. Review before adding it to the bundle.`
-            );
-        } catch (e) {
-            window.showErrorMessage(
-                `Unable to compile FOIL campaign: ${(e as Error).message}`
-            );
-        }
-    };
+        return selected?.label;
+    }
 
     private async openFile(filePath: string | undefined): Promise<void> {
         if (filePath === undefined) {

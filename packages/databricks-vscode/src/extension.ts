@@ -748,7 +748,8 @@ export async function activate(
     const foilLabModel = new FoilLabModel(workspaceFolderManager);
     const foilLabManager = new FoilLabManager(
         foilLabModel,
-        workspaceFolderManager
+        workspaceFolderManager,
+        bundleFileSet
     );
     await foilLabManager.initialize();
     const foilLabCommands = new FoilLabCommands(
@@ -820,6 +821,11 @@ export async function activate(
         telemetry.registerCommand(
             "databricks.foilLab.compileCampaign",
             foilLabCommands.compileCampaign,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.applyCampaign",
+            foilLabCommands.applyCampaign,
             foilLabCommands
         )
     );

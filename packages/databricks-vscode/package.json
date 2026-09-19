@@ -752,6 +752,12 @@
                 "title": "Compile FOIL campaign preview",
                 "category": "FOIL Lab",
                 "icon": "$(package)"
+            },
+            {
+                "command": "databricks.foilLab.applyCampaign",
+                "title": "Apply FOIL campaign to bundle",
+                "category": "FOIL Lab",
+                "icon": "$(git-merge)"
             }
         ],
         "viewsContainers": {
@@ -1053,6 +1059,11 @@
                     "command": "databricks.foilLab.compileCampaign",
                     "when": "view == foilLabView",
                     "group": "navigation@3"
+                },
+                {
+                    "command": "databricks.foilLab.applyCampaign",
+                    "when": "view == foilLabView",
+                    "group": "navigation@4"
                 }
             ],
             "databricks.cluster.filter": [

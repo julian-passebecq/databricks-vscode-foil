@@ -2,7 +2,13 @@ import {Disposable, RelativePattern, workspace} from "vscode";
 import {mkdir, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 
+import {
+    BundleFileSet,
+    parseBundleYaml,
+    writeBundleYaml,
+} from "../bundle/BundleFileSet";
 import {WorkspaceFolderManager} from "../vscode-objs/WorkspaceFolderManager";
+import {addBundleInclude} from "./bundleIntegration";
 import {compileCampaign as buildCampaign} from "./compileCampaign";
 import {FoilLabModel} from "./FoilLabModel";
 import {
@@ -20,7 +26,8 @@ export class FoilLabManager implements Disposable {
 
     constructor(
         private readonly model: FoilLabModel,
-        private readonly workspaceFolderManager: WorkspaceFolderManager
+        private readonly workspaceFolderManager: WorkspaceFolderManager,
+        private readonly bundleFileSet: BundleFileSet
     ) {
         this.disposables.push(
             this.workspaceFolderManager.onDidChangeActiveProjectFolder(() => {
@@ -68,6 +75,7 @@ export class FoilLabManager implements Disposable {
                 ANALYSIS_REGISTRY
             ),
             this.writeJsonIfMissing(path.join(root, "ui", "app.json"), APP_SPEC),
+            this.writeTextIfMissing(path.join(root, ".gitignore"), "build/\n"),
         ]);
         await this.model.refresh();
     }
@@ -149,8 +157,54 @@ export class FoilLabManager implements Disposable {
         return path.join(buildRoot, "manifest.json");
     }
 
+    async applyCampaign(campaignId: string): Promise<{
+        manifestPath: string;
+        bundleFile: string;
+        includePath: string;
+        changed: boolean;
+    }> {
+        const manifestPath = await this.compileCampaign(campaignId);
+        const rootFile = await this.bundleFileSet.getRootFile();
+        if (rootFile === undefined) {
+            throw new Error(
+                "No unique Databricks bundle root file was found in the active project."
+            );
+        }
+
+        const includePath = `.foil-lab/build/${campaignId}/resources/campaign.job.yml`;
+        const bundle = await parseBundleYaml(rootFile);
+        const integrated = addBundleInclude(bundle, includePath);
+        if (integrated.changed) {
+            await writeBundleYaml(rootFile, integrated.bundle);
+            this.bundleFileSet.bundleDataCache.invalidate();
+        }
+
+        return {
+            manifestPath,
+            bundleFile: rootFile.fsPath,
+            includePath,
+            changed: integrated.changed,
+        };
+    }
+
     async refresh(): Promise<void> {
         await this.model.refresh();
+    }
+
+    private async writeTextIfMissing(
+        filePath: string,
+        content: string
+    ): Promise<void> {
+        try {
+            await writeFile(filePath, content, {
+                encoding: "utf8",
+                flag: "wx",
+            });
+        } catch (e) {
+            if ((e as NodeJS.ErrnoException).code !== "EEXIST") {
+                throw e;
+            }
+        }
     }
 
     private async writeJsonIfMissing(
@@ -177,14 +231,15 @@ export class FoilLabManager implements Disposable {
         this.fileWatcher?.dispose();
         this.fileWatcher = undefined;
 
-        let projectUri;
+        let pattern: RelativePattern;
         try {
-            projectUri = this.workspaceFolderManager.activeProjectUri;
+            pattern = new RelativePattern(
+                this.workspaceFolderManager.activeProjectUri,
+                ".foil-lab/**/*.json"
+            );
         } catch {
             return;
         }
-
-        const pattern = new RelativePattern(projectUri, ".foil-lab/**/*.json");
         const watcher = workspace.createFileSystemWatcher(pattern);
         watcher.onDidCreate(() => void this.model.refresh());
         watcher.onDidChange(() => void this.model.refresh());
