@@ -742,6 +742,12 @@
                 "icon": "$(browser)"
             },
             {
+                "command": "databricks.foilLab.importControlMachine",
+                "title": "Import FOIL company machine snapshot",
+                "category": "FOIL Lab",
+                "icon": "$(repo-pull)"
+            },
+            {
                 "command": "databricks.foilLab.createCampaign",
                 "title": "Create FOIL experiment campaign",
                 "category": "FOIL Lab",
