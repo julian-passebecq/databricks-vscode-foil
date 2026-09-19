@@ -471,6 +471,7 @@ export function compileCampaign(
         technology: campaign.technology,
         machineId: campaign.machineId,
         machineModelVersion: machine.modelVersion,
+        controlProvenance: machine.control ?? null,
         classification: campaign.classification,
         sourceHash,
         buildHash,
