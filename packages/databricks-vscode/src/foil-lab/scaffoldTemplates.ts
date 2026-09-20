@@ -70,6 +70,7 @@ export const ANALYSIS_REGISTRY = {
     modules: [
         {id: "campaign_contract", status: "READY"},
         {id: "descriptive_statistics", status: "READY"},
+        {id: "response_statistics", status: "READY"},
         {id: "parameter_sweep", status: "PLANNED"},
         {id: "correlation", status: "PLANNED"},
         {id: "regression", status: "PLANNED"},

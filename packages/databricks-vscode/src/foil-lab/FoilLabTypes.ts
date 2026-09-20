@@ -55,6 +55,9 @@ export interface FoilCampaignConfig {
         streamlitApp?: boolean;
         mlflow?: boolean;
     };
+    inputProvenance?: Record<string, unknown>;
+    safety?: Record<string, unknown>;
+    provenance?: Record<string, unknown>;
 }
 
 export interface FoilAppConfig {

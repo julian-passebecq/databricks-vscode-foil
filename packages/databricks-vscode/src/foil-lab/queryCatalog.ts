@@ -7,6 +7,7 @@ export interface FoilQueryArtifact {
 
 export interface FoilQueryOptions {
     includeSyntheticResponse?: boolean;
+    includeResponseStatistics?: boolean;
 }
 
 function quoteIdentifier(value: string): string {
@@ -38,6 +39,10 @@ export function buildQueryArtifacts(
     const scenarioParameters = fullTable(project, "scenario_parameters");
     const statistics = fullTable(project, "campaign_design_statistics");
     const responses = fullTable(project, "scenario_response_results");
+    const responseStatistics = fullTable(
+        project,
+        "campaign_response_statistics"
+    );
 
     const catalog = {
         version: "0.1",
@@ -106,6 +111,15 @@ export function buildQueryArtifacts(
             left: "campaign_scenarios.scenario_id",
             right: "scenario_response_results.scenario_id",
             cardinality: "one_to_one",
+        });
+    }
+
+    if (options.includeResponseStatistics === true) {
+        catalog.queries.push({
+            id: "response_statistics",
+            file: "response_statistics.sql",
+            grain: "one row per synthetic response metric",
+            datasets: ["campaign_response_statistics"],
         });
     }
 
@@ -182,6 +196,20 @@ ORDER BY parameter_path, value_index;
 FROM ${responses}
 WHERE campaign_id = :campaign_id
 ORDER BY scenario_id;
+`,
+        });
+    }
+
+    if (options.includeResponseStatistics === true) {
+        artifacts.push({
+            relativePath: "queries/response_statistics.sql",
+            content:
+                sqlHeader(campaign) +
+                `SELECT campaign_id, source_hash, result_classification, metric,
+       value_count, mean_value, stddev_value, min_value, max_value
+FROM ${responseStatistics}
+WHERE campaign_id = :campaign_id
+ORDER BY metric;
 `,
         });
     }

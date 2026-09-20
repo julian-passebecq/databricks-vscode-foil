@@ -137,6 +137,10 @@ describe("compileCampaign", () => {
             ...campaign,
             campaignId: "CAMP-WIND-BASELINE-001",
             machineId: "MACHINE-WIND-001",
+            analyses: [
+                {module: "descriptive_statistics", enabled: true},
+                {module: "response_statistics", enabled: true},
+            ],
             test: {
                 environment: {
                     windSpeedMs: [6, 9],
@@ -174,6 +178,18 @@ describe("compileCampaign", () => {
             (artifact) =>
                 artifact.relativePath === "queries/scenario_response.sql"
         );
+        const responseStatistics = plan.artifacts.find(
+            (artifact) =>
+                artifact.relativePath ===
+                "src/analyses/response_statistics.py"
+        );
+        const responseStatisticsQuery = plan.artifacts.find(
+            (artifact) =>
+                artifact.relativePath === "queries/response_statistics.sql"
+        );
+        const job = plan.artifacts.find(
+            (artifact) => artifact.relativePath === "resources/campaign.job.yml"
+        );
         const dashboard = plan.artifacts.find(
             (artifact) =>
                 artifact.relativePath === "dashboard/dashboard-intent.json"
@@ -198,8 +214,24 @@ describe("compileCampaign", () => {
         );
         assert.ok(responseQuery?.content.includes("scenario_response_results"));
         assert.ok(responseQuery?.content.includes(":campaign_id"));
+        assert.ok(
+            responseStatistics?.content.includes(
+                "campaign_response_statistics"
+            )
+        );
+        assert.ok(
+            responseStatistics?.content.includes("SYNTHETIC_MODEL_OUTPUT")
+        );
+        assert.ok(
+            responseStatisticsQuery?.content.includes(
+                "campaign_response_statistics"
+            )
+        );
+        assert.ok(job?.content.includes("task_key: response_statistics"));
         assert.ok(dashboard?.content.includes("SYNTHETIC_PARAMETRIC_RESPONSE"));
+        assert.ok(dashboard?.content.includes("campaign_response_statistics"));
         assert.ok(appPage?.content.includes("synthetic_response"));
+        assert.ok(appPage?.content.includes("response_statistics"));
     });
 
     it("changes the source hash when the campaign changes", () => {

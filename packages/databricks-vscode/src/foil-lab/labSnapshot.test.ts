@@ -27,6 +27,9 @@ const SNAPSHOT = {
         status: "DRAFT",
         classification: "SYNTHETIC",
         maturityLevel: 1,
+        physics: {
+            availablePowerRelation: "0.5 * rho * A_effective * |V|^3",
+        },
     },
     study: {
         studyId: "STUDY-WIND-001",
@@ -39,6 +42,14 @@ const SNAPSHOT = {
         classification: "SYNTHETIC",
         inputs: {windSpeed: [6, 8, 10]},
         analyses: [{module: "descriptive_statistics", enabled: true}],
+        inputProvenance: {
+            "environment.windSpeedMs": {
+                evidenceClass: "SYNTHETIC",
+            },
+        },
+        safety: {
+            measuredClaimsAllowed: false,
+        },
     },
 };
 
@@ -61,6 +72,22 @@ describe("FOIL Lab campaign snapshot", () => {
         assert.deepStrictEqual(materialized.campaign.test, {
             windSpeed: [6, 8, 10],
         });
+        assert.deepStrictEqual(materialized.campaign.inputProvenance, {
+            "environment.windSpeedMs": {
+                evidenceClass: "SYNTHETIC",
+            },
+        });
+        assert.deepStrictEqual(materialized.campaign.safety, {
+            measuredClaimsAllowed: false,
+        });
+        assert.deepStrictEqual(
+            (
+                materialized.machine.parameters?.modelDefinition as {
+                    physics?: {availablePowerRelation?: string};
+                }
+            ).physics?.availablePowerRelation,
+            "0.5 * rho * A_effective * |V|^3"
+        );
     });
 
     it("rejects snapshots without executable analyses", () => {

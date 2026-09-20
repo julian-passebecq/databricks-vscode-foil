@@ -31,6 +31,7 @@ export interface FoilLabCampaignSnapshot {
         status: string;
         classification: "SYNTHETIC" | "SANITIZED_APPROVED";
         maturityLevel: number;
+        [key: string]: unknown;
     };
     study: {
         studyId: string;
@@ -53,6 +54,9 @@ export interface FoilLabCampaignSnapshot {
             streamlitApp?: boolean;
             mlflow?: boolean;
         };
+        inputProvenance?: Record<string, unknown>;
+        safety?: Record<string, unknown>;
+        [key: string]: unknown;
     };
 }
 
@@ -156,6 +160,8 @@ export function materializeLabSnapshot(
             modelId: snapshot.model.modelId,
             modelVersion: snapshot.model.version,
             modelMaturityLevel: snapshot.model.maturityLevel,
+            modelDefinition: snapshot.model,
+            studyDefinition: snapshot.study,
             referenceFacts: snapshot.machine.facts ?? [],
             parameterDefinitions: snapshot.machine.parameters ?? [],
             unresolvedEngineering: snapshot.machine.unknowns ?? [],
@@ -178,6 +184,8 @@ export function materializeLabSnapshot(
             streamlitApp: true,
             mlflow: false,
         },
+        inputProvenance: snapshot.campaign.inputProvenance,
+        safety: snapshot.campaign.safety,
         provenance: {
             snapshotId: snapshot.snapshotId,
             snapshotHash,

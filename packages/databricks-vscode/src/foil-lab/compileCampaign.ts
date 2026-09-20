@@ -8,6 +8,7 @@ import type {
 import {
     buildAnalysisTaskYaml,
     buildDescriptiveStatisticsRunner,
+    buildResponseStatisticsRunner,
     isAnalysisEnabled,
 } from "./analysisModules";
 import {buildQueryArtifacts} from "./queryCatalog";
@@ -519,7 +520,11 @@ if __name__ == "__main__":
 `;
 }
 
-function buildJobYaml(campaign: FoilCampaignConfig, resource: string): string {
+function buildJobYaml(
+    campaign: FoilCampaignConfig,
+    resource: string,
+    includeResponseStatistics: boolean
+): string {
     return `resources:
   jobs:
     ${resource}:
@@ -529,7 +534,10 @@ function buildJobYaml(campaign: FoilCampaignConfig, resource: string): string {
         - task_key: register_campaign_contract
           spark_python_task:
             python_file: ../src/run_campaign.py
-          environment_key: default${buildAnalysisTaskYaml(campaign)}
+          environment_key: default${buildAnalysisTaskYaml(
+              campaign,
+              includeResponseStatistics
+          )}
       environments:
         - environment_key: default
           spec:
@@ -569,6 +577,16 @@ function buildDashboardIntent(
             scope: "SYNTHETIC_PARAMETRIC_RESPONSE",
         });
     }
+    if (
+        supportsSyntheticResponse(machine, campaign) &&
+        isAnalysisEnabled(campaign, "response_statistics")
+    ) {
+        datasets.push({
+            id: "campaign_response_statistics",
+            table: `${project.databricks.goldSchema}.campaign_response_statistics`,
+            scope: "SYNTHETIC_MODEL_OUTPUT",
+        });
+    }
     if (isAnalysisEnabled(campaign, "descriptive_statistics")) {
         datasets.push({
             id: "campaign_design_statistics",
@@ -600,6 +618,12 @@ function buildAppPageIntent(
     ];
     if (supportsSyntheticResponse(machine, campaign)) {
         sections.push("synthetic_response");
+    }
+    if (
+        supportsSyntheticResponse(machine, campaign) &&
+        isAnalysisEnabled(campaign, "response_statistics")
+    ) {
+        sections.push("response_statistics");
     }
     if (isAnalysisEnabled(campaign, "descriptive_statistics")) {
         sections.push("design_statistics");
@@ -652,6 +676,9 @@ export function compileCampaign(
         machine,
         campaign
     );
+    const responseStatistics = syntheticResponseEnabled
+        ? buildResponseStatisticsRunner(project, campaign, sourceHash)
+        : undefined;
     const manifest = {
         compilerVersion: "0.4",
         campaignId: campaign.campaignId,
@@ -671,6 +698,10 @@ export function compileCampaign(
             scenarioResponse: syntheticResponseEnabled
                 ? `${project.databricks.goldSchema}.scenario_response_results`
                 : undefined,
+            responseStatistics:
+                responseStatistics === undefined
+                    ? undefined
+                    : `${project.databricks.goldSchema}.campaign_response_statistics`,
             designStatistics:
                 descriptiveStatistics === undefined
                     ? undefined
@@ -682,7 +713,9 @@ export function compileCampaign(
             compiled:
                 analysis.module === "descriptive_statistics"
                     ? descriptiveStatistics !== undefined
-                    : false,
+                    : analysis.module === "response_statistics"
+                      ? responseStatistics !== undefined
+                      : false,
         })),
         safety: {
             executesArbitraryImportedScripts: false,
@@ -700,6 +733,7 @@ export function compileCampaign(
 
     const queryArtifacts = buildQueryArtifacts(project, campaign, {
         includeSyntheticResponse: syntheticResponseEnabled,
+        includeResponseStatistics: responseStatistics !== undefined,
     });
     const artifacts: FoilCompiledArtifact[] = [
         {
@@ -716,7 +750,11 @@ export function compileCampaign(
         },
         {
             relativePath: "resources/campaign.job.yml",
-            content: buildJobYaml(campaign, resource),
+            content: buildJobYaml(
+                campaign,
+                resource,
+                responseStatistics !== undefined
+            ),
         },
         {
             relativePath: "dashboard/dashboard-intent.json",
@@ -740,6 +778,13 @@ export function compileCampaign(
         artifacts.push({
             relativePath: "src/analyses/descriptive_statistics.py",
             content: descriptiveStatistics,
+        });
+    }
+
+    if (responseStatistics !== undefined) {
+        artifacts.push({
+            relativePath: "src/analyses/response_statistics.py",
+            content: responseStatistics,
         });
     }
 
