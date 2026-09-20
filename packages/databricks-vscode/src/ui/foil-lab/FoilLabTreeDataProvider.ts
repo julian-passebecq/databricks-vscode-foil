@@ -315,6 +315,11 @@ export class FoilLabTreeDataProvider
                 "account"
             ),
             this.action(
+                "Import machine / campaign snapshot",
+                "databricks.foilLab.importControlMachine",
+                "repo-pull"
+            ),
+            this.action(
                 "Validate FOIL configuration",
                 "databricks.foilLab.validate",
                 "check-all"

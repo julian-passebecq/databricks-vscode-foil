@@ -743,7 +743,7 @@
             },
             {
                 "command": "databricks.foilLab.importControlMachine",
-                "title": "Import FOIL company machine snapshot",
+                "title": "Import FOIL machine / campaign snapshot",
                 "category": "FOIL Lab",
                 "icon": "$(repo-pull)"
             },
@@ -2030,6 +2030,10 @@
             {
                 "fileMatch": "**/.foil-lab/analysis-modules/registry.json",
                 "url": "./resources/foil-lab/schemas/analysis-registry.schema.json"
+            },
+            {
+                "fileMatch": "**/.foil-lab/snapshots/*.json",
+                "url": "./resources/foil-lab/schemas/lab-snapshot.schema.json"
             }
         ]
     },

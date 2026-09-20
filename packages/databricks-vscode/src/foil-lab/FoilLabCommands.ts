@@ -108,9 +108,9 @@ export class FoilLabCommands {
                 canSelectMany: false,
                 canSelectFiles: true,
                 canSelectFolders: false,
-                title: "Import FOIL company machine snapshot",
-                openLabel: "Import machine snapshot",
-                filters: {"FOIL machine snapshot": ["json"]},
+                title: "Import FOIL machine or campaign snapshot",
+                openLabel: "Import FOIL snapshot",
+                filters: {"FOIL snapshot": ["json"]},
             });
             if (!selected?.[0]) {
                 return;
@@ -120,11 +120,11 @@ export class FoilLabCommands {
             );
             await this.openFile(target);
             window.showInformationMessage(
-                "FOIL wind machine synchronized from the company control snapshot. Databricks campaigns remain synthetic until evidence is approved upstream."
+                "FOIL snapshot imported and materialized locally. Campaign compilation now uses the frozen local copy rather than live MongoDB state."
             );
         } catch (e) {
             window.showErrorMessage(
-                `Unable to import FOIL control machine: ${(e as Error).message}`
+                `Unable to import FOIL snapshot: ${(e as Error).message}`
             );
         }
     };

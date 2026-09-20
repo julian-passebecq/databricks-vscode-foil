@@ -13,6 +13,7 @@ import {compileDashboard} from "./dashboardCompiler";
 import {addBundleInclude} from "./bundleIntegration";
 import {compileCampaign as buildCampaign} from "./compileCampaign";
 import {FoilLabModel} from "./FoilLabModel";
+import {materializeLabSnapshot, parseLabSnapshot} from "./labSnapshot";
 import {
     ANALYSIS_REGISTRY,
     APP_SPEC,
@@ -58,6 +59,7 @@ export class FoilLabManager implements Disposable {
             mkdir(path.join(root, "analysis-modules"), {recursive: true}),
             mkdir(path.join(root, "ui"), {recursive: true}),
             mkdir(path.join(root, "build"), {recursive: true}),
+            mkdir(path.join(root, "snapshots"), {recursive: true}),
         ]);
 
         await Promise.all([
@@ -97,10 +99,61 @@ export class FoilLabManager implements Disposable {
     async importControlMachineSnapshot(snapshotPath: string): Promise<string> {
         const root = this.model.labRootPath;
         if (root === undefined) {
-            throw new Error("Initialize the FOIL Lab before importing a control snapshot.");
+            throw new Error(
+                "Initialize the FOIL Lab before importing a snapshot."
+            );
         }
 
-        const raw = JSON.parse(await readFile(snapshotPath, "utf8")) as {
+        const rawJson = await readFile(snapshotPath, "utf8");
+        const raw = JSON.parse(rawJson) as Record<string, unknown>;
+
+        if (raw.schema === "foil-lab/campaign-snapshot-v1") {
+            const snapshot = parseLabSnapshot(raw);
+            if (snapshot.machine.technology !== "EOLIEN") {
+                throw new Error(
+                    "The current FOIL Lab strategy accepts EOLIEN campaign snapshots only."
+                );
+            }
+
+            const materialized = materializeLabSnapshot(
+                snapshot,
+                rawJson,
+                snapshotPath
+            );
+            const frozenPath = path.join(
+                root,
+                "snapshots",
+                `${snapshot.snapshotId}.json`
+            );
+            const machinePath = path.join(
+                root,
+                "machines",
+                `${snapshot.machine.machineId}__${snapshot.machine.revision}.json`
+            );
+            const campaignPath = path.join(
+                root,
+                "campaigns",
+                `${snapshot.campaign.campaignId}.json`
+            );
+
+            await Promise.all([
+                writeFile(frozenPath, `${JSON.stringify(snapshot, null, 4)}\n`, "utf8"),
+                writeFile(
+                    machinePath,
+                    `${JSON.stringify(materialized.machine, null, 4)}\n`,
+                    "utf8"
+                ),
+                writeFile(
+                    campaignPath,
+                    `${JSON.stringify(materialized.campaign, null, 4)}\n`,
+                    "utf8"
+                ),
+            ]);
+            await this.model.refresh();
+            return campaignPath;
+        }
+
+        const control = raw as {
             schema?: string;
             sourceRepo?: string;
             machineId?: string;
@@ -114,15 +167,19 @@ export class FoilLabManager implements Disposable {
             controlDigest?: string;
         };
         if (
-            raw.schema !== "foil-control/databricks-machine-snapshot-v1" ||
-            raw.machineId === undefined ||
-            raw.machineRevision === undefined ||
-            raw.sourceRepo === undefined
+            control.schema !== "foil-control/databricks-machine-snapshot-v1" ||
+            control.machineId === undefined ||
+            control.machineRevision === undefined ||
+            control.sourceRepo === undefined
         ) {
-            throw new Error("Selected JSON is not a valid FOIL control Databricks machine snapshot.");
+            throw new Error(
+                "Selected JSON is neither a FOIL company machine snapshot nor a FOIL Lab campaign snapshot."
+            );
         }
-        if (raw.technology !== "EOLIEN") {
-            throw new Error("The MVP importer accepts the active EOLIEN control machine only.");
+        if (control.technology !== "EOLIEN") {
+            throw new Error(
+                "The MVP importer accepts the active EOLIEN control machine only."
+            );
         }
 
         const machine = {
@@ -130,24 +187,24 @@ export class FoilLabManager implements Disposable {
             technology: "EOLIEN",
             status: "ACTIVE",
             classification: "SYNTHETIC",
-            modelVersion: `control-${raw.machineRevision}`,
+            modelVersion: `control-${control.machineRevision}`,
             description:
                 "Active wind profile imported from the FOIL company control repository. Scenario values remain synthetic until approved evidence updates the control source.",
             control: {
-                sourceRepo: raw.sourceRepo,
-                controlMachineId: raw.machineId,
-                revision: raw.machineRevision,
+                sourceRepo: control.sourceRepo,
+                controlMachineId: control.machineId,
+                revision: control.machineRevision,
                 importedAt: new Date().toISOString(),
                 snapshotPath,
-                controlDigest: raw.controlDigest,
+                controlDigest: control.controlDigest,
             },
             parameters: {
-                referenceFacts: raw.referenceFacts ?? [],
-                simulationParameterIds: (raw.simulationParameters ?? [])
-                    .map((item) => typeof item === "string" ? item : item.id)
+                referenceFacts: control.referenceFacts ?? [],
+                simulationParameterIds: (control.simulationParameters ?? [])
+                    .map((item) => (typeof item === "string" ? item : item.id))
                     .filter((item): item is string => typeof item === "string"),
-                unresolvedEngineering: raw.unresolvedEngineering ?? [],
-                controlRules: raw.rules ?? [],
+                unresolvedEngineering: control.unresolvedEngineering ?? [],
+                controlRules: control.rules ?? [],
             },
         };
 

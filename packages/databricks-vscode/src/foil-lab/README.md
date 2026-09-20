@@ -40,3 +40,10 @@ The imported profile records the control-machine ID and revision inside the Data
 The lab can now generate a native Databricks AI/BI dashboard asset plus its Declarative Automation Bundle resource. The first dashboard compiler binds governed Gold datasets for campaign registry, scenario matrix, and design statistics. It deliberately leaves the canvas layout empty until widget serialization is validated against a live workspace; this avoids treating an unstable presentation detail as a scientific contract.
 
 Campaign manifests persist the imported control-machine provenance (`sourceRepo`, `controlMachineId`, `revision`, `controlDigest`) when a machine was synchronized from `foil-control-v1`. That provenance is part of the deterministic campaign source hash and can be recovered from the Gold `machine_json` field without introducing a second company truth.
+
+
+## MongoDB lab boundary
+
+Mutable study, campaign, model-development and backlog state may live in the dedicated `foil_lab` MongoDB database. The extension does not require a live MongoDB connection. Before compilation, AI/control tooling exports a frozen `foil-lab/campaign-snapshot-v1` JSON document. Importing that snapshot materializes a local machine profile, campaign file and immutable snapshot copy under `.foil-lab/snapshots/`.
+
+This preserves reproducibility: later MongoDB changes cannot alter an already imported campaign. Databricks remains the runtime/result system; Bronze/Silver/Gold rows and MLflow artifacts are not stored in MongoDB.
