@@ -141,7 +141,9 @@ export class FoilLabCommands {
             );
         } catch (e) {
             window.showErrorMessage(
-                `Unable to import bundled FOIL baseline: ${(e as Error).message}`
+                `Unable to import bundled FOIL baseline: ${
+                    (e as Error).message
+                }`
             );
         }
     };

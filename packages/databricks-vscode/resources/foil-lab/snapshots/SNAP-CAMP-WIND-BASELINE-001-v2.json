@@ -197,12 +197,7 @@
                     "adaptive control",
                     "energy control"
                 ],
-                "instrumentation": [
-                    "loads",
-                    "positions",
-                    "frequency",
-                    "power"
-                ],
+                "instrumentation": ["loads", "positions", "frequency", "power"],
                 "validationPlan": [
                     "representative conditions",
                     "mobile pre-tests",
@@ -476,31 +471,17 @@
         },
         "baselineRanges": {
             "windSpeedMs": {
-                "values": [
-                    6,
-                    9,
-                    12,
-                    15,
-                    18
-                ],
+                "values": [6, 9, 12, 15, 18],
                 "evidenceClass": "SYNTHETIC",
                 "note": "Exploratory study range; not a validated tunnel or operating range."
             },
             "pitchDeg": {
-                "values": [
-                    5,
-                    15,
-                    25
-                ],
+                "values": [5, 15, 25],
                 "evidenceClass": "SYNTHETIC",
                 "note": "Exploratory orientable-pitch values; no validated Foil'O wind range exists."
             },
             "frequencyHz": {
-                "values": [
-                    0.5,
-                    0.8,
-                    1.1
-                ],
+                "values": [0.5, 0.8, 1.1],
                 "evidenceClass": "SYNTHETIC",
                 "note": "Exploratory oscillation-frequency values; no validated Foil'O wind range exists."
             }
@@ -534,13 +515,7 @@
         "classification": "SYNTHETIC",
         "inputs": {
             "environment": {
-                "windSpeedMs": [
-                    6,
-                    9,
-                    12,
-                    15,
-                    18
-                ],
+                "windSpeedMs": [6, 9, 12, 15, 18],
                 "airDensityKgM3": 1.225,
                 "turbulenceIntensityPct": 10
             },
@@ -548,16 +523,8 @@
                 "effectiveAreaM2": 2
             },
             "control": {
-                "pitchDeg": [
-                    5,
-                    15,
-                    25
-                ],
-                "frequencyHz": [
-                    0.5,
-                    0.8,
-                    1.1
-                ]
+                "pitchDeg": [5, 15, 25],
+                "frequencyHz": [0.5, 0.8, 1.1]
             },
             "conversion": {
                 "efficiencyProxy": 0.75
