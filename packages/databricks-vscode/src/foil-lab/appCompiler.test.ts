@@ -42,7 +42,9 @@ describe("compileApp", () => {
         assert.ok(python?.content.includes("campaign_response_statistics"));
         assert.ok(python?.content.includes("SYNTHETIC_MODEL_OUTPUT"));
         assert.ok(plan.requiredGoldTables.includes("scenario_parameters"));
-        assert.ok(plan.requiredGoldTables.includes("scenario_response_results"));
+        assert.ok(
+            plan.requiredGoldTables.includes("scenario_response_results")
+        );
         assert.ok(
             plan.requiredGoldTables.includes("campaign_response_statistics")
         );
