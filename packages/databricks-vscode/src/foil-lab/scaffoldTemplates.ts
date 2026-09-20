@@ -4,10 +4,9 @@ export const PROJECT_CONFIG = {
     activeTechnology: "EOLIEN",
     defaultClassification: "SYNTHETIC",
     allowRealData: false,
-    controlContextFile:
-        "../foil-control-v1/interfaces/databricks/lab_context.json",
     databricks: {
         target: "dev",
+        catalog: "",
         goldSchema: "foil_gold",
         labJob: "synthetic_lab",
         appResource: "foil_virtual_lab",

@@ -150,7 +150,7 @@ export function materializeLabSnapshot(
         description:
             "Frozen FOIL Lab machine/model context imported from a versioned campaign snapshot.",
         control: {
-            sourceRepo: "mongodb:foil_lab",
+            sourceRepo: "mongodb:foil_control+foil_lab",
             controlMachineId: snapshot.machine.machineId,
             revision: snapshot.machine.revision,
             importedAt: new Date().toISOString(),

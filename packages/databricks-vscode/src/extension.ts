@@ -819,6 +819,11 @@ export async function activate(
             foilLabCommands
         ),
         telemetry.registerCommand(
+            "databricks.foilLab.importBundledBaseline",
+            foilLabCommands.importBundledBaseline,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
             "databricks.foilLab.createCampaign",
             foilLabCommands.createCampaign,
             foilLabCommands

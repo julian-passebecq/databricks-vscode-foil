@@ -15,9 +15,12 @@ function quoteIdentifier(value: string): string {
 }
 
 function fullTable(project: FoilLabProjectConfig, table: string): string {
-    return `${quoteIdentifier(project.databricks.goldSchema)}.${quoteIdentifier(
-        table
-    )}`;
+    const schemaAndTable = `${quoteIdentifier(
+        project.databricks.goldSchema
+    )}.${quoteIdentifier(table)}`;
+    return project.databricks.catalog
+        ? `${quoteIdentifier(project.databricks.catalog)}.${schemaAndTable}`
+        : schemaAndTable;
 }
 
 function sqlHeader(campaign: FoilCampaignConfig): string {

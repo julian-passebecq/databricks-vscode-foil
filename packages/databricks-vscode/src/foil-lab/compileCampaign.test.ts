@@ -15,6 +15,7 @@ const project: FoilLabProjectConfig = {
     allowRealData: false,
     databricks: {
         target: "dev",
+        catalog: "foil",
         goldSchema: "foil_gold",
         labJob: "synthetic_lab",
         appResource: "foil_virtual_lab",
@@ -82,6 +83,8 @@ describe("compileCampaign", () => {
         assert.ok(job?.content.includes("environment_key: default"));
         assert.ok(job?.content.includes("spark_python_task:"));
         assert.ok(runner?.content.includes("campaign_registry"));
+        assert.ok(runner?.content.includes("USE CATALOG"));
+        assert.ok(runner?.content.includes("catalog = PROJECT"));
         assert.ok(runner?.content.includes("campaign_scenarios"));
         assert.ok(runner?.content.includes("scenario_parameters"));
         assert.ok(runner?.content.includes("build_scenarios"));

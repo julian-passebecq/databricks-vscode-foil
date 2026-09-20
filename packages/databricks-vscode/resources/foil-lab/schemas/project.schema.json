@@ -40,6 +40,11 @@
                     "type": "string",
                     "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
                 },
+                "catalog": {
+                    "type": "string",
+                    "pattern": "^$|^[A-Za-z_][A-Za-z0-9_]*$",
+                    "description": "Unity Catalog catalog used by FOIL Gold. Empty until configured for a live workspace."
+                },
                 "goldSchema": {
                     "type": "string",
                     "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
@@ -57,7 +62,7 @@
         "controlContextFile": {
             "type": "string",
             "minLength": 1,
-            "description": "Optional local path, relative to the Databricks project root or absolute, to foil-control-v1/interfaces/databricks/lab_context.json."
+            "description": "Optional legacy local control-context path. New workflows use frozen Mongo-derived campaign snapshots instead."
         }
     }
 }

@@ -129,6 +129,23 @@ export class FoilLabCommands {
         }
     };
 
+    importBundledBaseline = async (): Promise<void> => {
+        try {
+            if (!this.model.state.initialized) {
+                await this.manager.initializeProject();
+            }
+            const target = await this.manager.importBundledBaseline();
+            await this.openFile(target);
+            window.showInformationMessage(
+                "Current FOIL Wind baseline imported from the bundled frozen snapshot (control revision 2026-09-20.1)."
+            );
+        } catch (e) {
+            window.showErrorMessage(
+                `Unable to import bundled FOIL baseline: ${(e as Error).message}`
+            );
+        }
+    };
+
     createCampaign = async (): Promise<void> => {
         try {
             if (!this.model.state.initialized) {

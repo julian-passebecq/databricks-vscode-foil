@@ -223,6 +223,14 @@ export class FoilLabManager implements Disposable {
         return target;
     }
 
+    async importBundledBaseline(): Promise<string> {
+        const snapshotPath = path.resolve(
+            __dirname,
+            "../resources/foil-lab/snapshots/SNAP-CAMP-WIND-BASELINE-001-v2.json"
+        );
+        return this.importControlMachineSnapshot(snapshotPath);
+    }
+
     async createCampaign(campaignId: string): Promise<string> {
         const root = this.model.labRootPath;
         if (root === undefined) {
@@ -343,15 +351,23 @@ export class FoilLabManager implements Disposable {
         await this.model.refresh();
         const app = this.model.state.app;
         const appSpecPath = this.model.appSpecPath;
-        if (app === undefined || appSpecPath === undefined) {
+        const project = this.model.state.project;
+        const projectConfigPath = this.model.projectConfigPath;
+        if (
+            app === undefined ||
+            appSpecPath === undefined ||
+            project === undefined ||
+            projectConfigPath === undefined
+        ) {
             throw new Error(
                 "Initialize the FOIL Lab before configuring the App."
             );
         }
 
+        const normalizedCatalog = catalog.trim();
         const updated = {
             ...app,
-            catalog: catalog.trim(),
+            catalog: normalizedCatalog,
             sqlWarehouseId: sqlWarehouseId.trim(),
             goldSchema:
                 this.model.state.project?.databricks.goldSchema ??
@@ -359,11 +375,26 @@ export class FoilLabManager implements Disposable {
             readOnly: true,
             canLaunchCampaigns: false,
         };
-        await writeFile(
-            appSpecPath,
-            `${JSON.stringify(updated, null, 4)}\n`,
-            "utf8"
-        );
+        const updatedProject = {
+            ...project,
+            databricks: {
+                ...project.databricks,
+                catalog: normalizedCatalog,
+            },
+        };
+
+        await Promise.all([
+            writeFile(
+                appSpecPath,
+                `${JSON.stringify(updated, null, 4)}\n`,
+                "utf8"
+            ),
+            writeFile(
+                projectConfigPath,
+                `${JSON.stringify(updatedProject, null, 4)}\n`,
+                "utf8"
+            ),
+        ]);
         await this.model.refresh();
         return appSpecPath;
     }

@@ -13,6 +13,7 @@ export interface FoilLabProjectConfig {
     controlContextFile?: string;
     databricks: {
         target: string;
+        catalog?: string;
         goldSchema: string;
         labJob: string;
         appResource: string;

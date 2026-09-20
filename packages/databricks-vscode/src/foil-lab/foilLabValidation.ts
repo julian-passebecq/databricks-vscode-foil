@@ -96,6 +96,29 @@ export function validateProjectConfig(value: unknown): {
         issues.push(error("databricks", "Databricks settings are required."));
     } else {
         validateSafeId(value.databricks.target, "databricks.target", issues);
+        if (
+            value.databricks.catalog !== undefined &&
+            (typeof value.databricks.catalog !== "string" ||
+                (value.databricks.catalog.length > 0 &&
+                    !SAFE_SCHEMA.test(value.databricks.catalog)))
+        ) {
+            issues.push(
+                error(
+                    "databricks.catalog",
+                    "catalog must be empty or a simple Unity Catalog identifier."
+                )
+            );
+        } else if (
+            value.databricks.catalog === undefined ||
+            value.databricks.catalog.length === 0
+        ) {
+            issues.push(
+                warning(
+                    "databricks.catalog",
+                    "Configure the Unity Catalog catalog before live deployment."
+                )
+            );
+        }
         validateSafeId(value.databricks.labJob, "databricks.labJob", issues);
         validateSafeId(
             value.databricks.appResource,

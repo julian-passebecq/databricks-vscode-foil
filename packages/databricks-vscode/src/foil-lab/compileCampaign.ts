@@ -245,9 +245,12 @@ def synthetic_wind_response(parameters):
 def main():
     spark = SparkSession.builder.getOrCreate()
     gold_schema = PROJECT["databricks"]["goldSchema"]
+    catalog = PROJECT["databricks"].get("catalog")
     campaign_id = CAMPAIGN["campaignId"]
     compiled_at = datetime.now(timezone.utc).isoformat()
 
+    if catalog:
+        spark.sql(f"USE CATALOG \\`{catalog}\\`")
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS \`{gold_schema}\`")
     spark.sql(
         f"""
@@ -653,6 +656,13 @@ export function compileCampaign(
     if (!SAFE_SCHEMA.test(project.databricks.goldSchema)) {
         throw new Error("Gold schema is not a safe Unity Catalog identifier.");
     }
+    if (
+        project.databricks.catalog !== undefined &&
+        project.databricks.catalog.length > 0 &&
+        !SAFE_SCHEMA.test(project.databricks.catalog)
+    ) {
+        throw new Error("Catalog is not a safe Unity Catalog identifier.");
+    }
 
     if (machine.machineId !== campaign.machineId) {
         throw new Error(
@@ -690,6 +700,7 @@ export function compileCampaign(
         sourceHash,
         buildHash,
         resourceKey: resource,
+        catalog: project.databricks.catalog ?? null,
         outputContract: {
             campaignRegistry: `${project.databricks.goldSchema}.campaign_registry`,
             campaignParameters: `${project.databricks.goldSchema}.campaign_parameters`,

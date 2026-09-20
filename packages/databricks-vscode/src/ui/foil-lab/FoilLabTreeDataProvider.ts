@@ -320,6 +320,11 @@ export class FoilLabTreeDataProvider
                 "repo-pull"
             ),
             this.action(
+                "Import bundled Wind baseline",
+                "databricks.foilLab.importBundledBaseline",
+                "beaker"
+            ),
+            this.action(
                 "Validate FOIL configuration",
                 "databricks.foilLab.validate",
                 "check-all"

@@ -11,6 +11,7 @@ const project: FoilLabProjectConfig = {
     allowRealData: false,
     databricks: {
         target: "dev",
+        catalog: "foil",
         goldSchema: "foil_gold",
         labJob: "synthetic_lab",
         appResource: "foil_virtual_lab",
@@ -40,6 +41,7 @@ describe("buildQueryArtifacts", () => {
         assert.ok(catalog?.content.includes('"sourceLayer": "GOLD"'));
         assert.ok(catalog?.content.includes('"cardinality": "one_to_many"'));
         assert.ok(scenarios?.content.includes("campaign_scenarios"));
+        assert.ok(scenarios?.content.includes("`foil`.`foil_gold`"));
         assert.ok(scenarios?.content.includes(":campaign_id"));
         assert.ok(!scenarios?.content.includes("CREATE TABLE"));
     });

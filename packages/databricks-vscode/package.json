@@ -748,6 +748,12 @@
                 "icon": "$(repo-pull)"
             },
             {
+                "command": "databricks.foilLab.importBundledBaseline",
+                "title": "Import bundled FOIL Wind baseline",
+                "category": "FOIL Lab",
+                "icon": "$(beaker)"
+            },
+            {
                 "command": "databricks.foilLab.createCampaign",
                 "title": "Create FOIL experiment campaign",
                 "category": "FOIL Lab",

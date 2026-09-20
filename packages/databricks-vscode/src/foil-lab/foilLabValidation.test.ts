@@ -17,6 +17,7 @@ describe("FOIL Lab validation", () => {
             allowRealData: false,
             databricks: {
                 target: "dev",
+                catalog: "foil",
                 goldSchema: "foil_gold",
                 labJob: "synthetic_lab",
                 appResource: "foil_virtual_lab",

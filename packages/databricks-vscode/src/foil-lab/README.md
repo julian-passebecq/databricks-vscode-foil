@@ -24,15 +24,51 @@ The next layers are live Free Edition capability probes, richer Gold query/resul
 
 Compiled campaigns also emit a read-only query pack under `.foil-lab/build/<campaign>/queries/`. The catalog records dataset grain and relationships while the SQL files provide standard campaign, scenario, parameter, and design-statistics queries. Streamlit, AI/BI generation, VS Code result panels, and external AI handoffs should reuse this contract instead of inventing independent joins.
 
-## Company control repository bridge
+## Company control and MongoDB bridge
 
-The company/project source of truth lives outside Databricks in `julian-passebecq/foil-control-v1`.
+The canonical mutable company/control state is **MongoDB Atlas → Project 0 → `foilcluster1` → `foil_control`**.
 
-The bridge is intentionally file-based:
+GitHub is not the mutable engineering truth. It carries code, schemas, deterministic migrations and frozen exports. Databricks does not need a live MongoDB connection.
 
-`foil-control-v1/interfaces/databricks/active_machine.json` → **FOIL Lab: Import FOIL company machine snapshot** → `.foil-lab/machines/eolien_lab_v1.json`.
+The normal bridge is:
 
-The imported profile records the control-machine ID and revision inside the Databricks project. Databricks campaigns may vary synthetic scenario parameters, but they do not write engineering facts back into the company control repository.
+```text
+foil_control (curated company/control truth)
+        +
+foil_lab (study/model/campaign planning)
+        |
+        v
+frozen foil-lab/campaign-snapshot-v1 JSON + SHA-256
+        |
+        v
+FOIL Lab import
+        |
+        +-- local machine profile
+        +-- local campaign JSON
+        +-- immutable snapshot copy
+        |
+        v
+DAB -> Databricks
+```
+
+The bundled test snapshot is `SNAP-CAMP-WIND-BASELINE-001-v2`, pinned to Wind control revision `2026-09-20.1`. It preserves the curated control contract (source hierarchy, value ledger, known unknowns, open control items and model policy) while the executable campaign remains small and explicitly synthetic.
+
+Hydrolien stays `REFERENCE_ONLY`; Hydro site/performance/economic values must not become Wind defaults.
+
+## First live test path
+
+1. Open a valid Databricks bundle project.
+2. **Initialize FOIL Virtual Lab**.
+3. **Import bundled FOIL Wind baseline**.
+4. **Configure FOIL Streamlit App** with the existing Unity Catalog catalog and Free Edition SQL warehouse ID. The catalog is saved to both the App and FOIL project so Spark and UI query the same Gold location.
+5. **Validate FOIL configuration**.
+6. **Compile / Apply campaign to bundle**.
+7. **Validate Databricks bundle**.
+8. **Deploy and run** the baseline campaign.
+9. Confirm `foil_gold.scenario_response_results` and `foil_gold.campaign_response_statistics`.
+10. Generate/apply the Streamlit App and AI/BI dashboard, then deploy again.
+
+Do not describe the run as deployed or validated until those live steps succeed in the user's workspace.
 
 ## AI/BI dashboard compiler
 
