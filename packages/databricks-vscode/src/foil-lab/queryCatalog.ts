@@ -6,7 +6,7 @@ export interface FoilQueryArtifact {
 }
 
 function quoteIdentifier(value: string): string {
-    return `\`${value.replace(/\`/g, "\`\`")}\``;
+    return "`" + value.replace(/`/g, "``") + "`";
 }
 
 function fullTable(project: FoilLabProjectConfig, table: string): string {
