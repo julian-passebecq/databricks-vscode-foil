@@ -119,6 +119,81 @@ describe("compileCampaign", () => {
         assert.ok(scenarioQuery?.content.includes(":campaign_id"));
     });
 
+    it("generates explicitly synthetic response results for wind_parametric_v1", () => {
+        const syntheticMachine: FoilMachineConfig = {
+            ...machine,
+            machineId: "MACHINE-WIND-001",
+            modelVersion: "wind_parametric_v1@0.1",
+        };
+        const syntheticCampaign: FoilCampaignConfig = {
+            ...campaign,
+            campaignId: "CAMP-WIND-BASELINE-001",
+            machineId: "MACHINE-WIND-001",
+            test: {
+                environment: {
+                    windSpeedMs: [6, 9],
+                    airDensityKgM3: 1.225,
+                    turbulenceIntensityPct: 10,
+                },
+                machine: {
+                    effectiveAreaM2: 2.0,
+                },
+                control: {
+                    pitchDeg: [5, 15],
+                    frequencyHz: [0.5, 0.8],
+                },
+                conversion: {
+                    efficiencyProxy: 0.75,
+                },
+                experiment: {
+                    durationH: 1.0,
+                },
+            },
+        };
+
+        const plan = compileCampaign(
+            project,
+            syntheticMachine,
+            syntheticCampaign
+        );
+        const runner = plan.artifacts.find(
+            (artifact) => artifact.relativePath === "src/run_campaign.py"
+        );
+        const manifest = plan.artifacts.find(
+            (artifact) => artifact.relativePath === "manifest.json"
+        );
+        const responseQuery = plan.artifacts.find(
+            (artifact) =>
+                artifact.relativePath === "queries/scenario_response.sql"
+        );
+        const dashboard = plan.artifacts.find(
+            (artifact) =>
+                artifact.relativePath === "dashboard/dashboard-intent.json"
+        );
+        const appPage = plan.artifacts.find(
+            (artifact) => artifact.relativePath === "ui/campaign-page.json"
+        );
+
+        assert.ok(runner?.content.includes("scenario_response_results"));
+        assert.ok(runner?.content.includes("SYNTHETIC_MODEL_OUTPUT"));
+        assert.ok(runner?.content.includes("cp_reference = 0.40"));
+        assert.ok(runner?.content.includes("turbulence_mean_effect_encoded"));
+        assert.ok(
+            manifest?.content.includes(
+                '"engineeringResultsGeneratedByThisStage": true'
+            )
+        );
+        assert.ok(
+            manifest?.content.includes(
+                '"engineeringResultClassification": "SYNTHETIC_MODEL_OUTPUT"'
+            )
+        );
+        assert.ok(responseQuery?.content.includes("scenario_response_results"));
+        assert.ok(responseQuery?.content.includes(":campaign_id"));
+        assert.ok(dashboard?.content.includes("SYNTHETIC_PARAMETRIC_RESPONSE"));
+        assert.ok(appPage?.content.includes("synthetic_response"));
+    });
+
     it("changes the source hash when the campaign changes", () => {
         const first = compileCampaign(project, machine, campaign);
         const second = compileCampaign(project, machine, {

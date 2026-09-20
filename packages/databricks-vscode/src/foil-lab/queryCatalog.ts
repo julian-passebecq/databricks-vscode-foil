@@ -5,6 +5,10 @@ export interface FoilQueryArtifact {
     content: string;
 }
 
+export interface FoilQueryOptions {
+    includeSyntheticResponse?: boolean;
+}
+
 function quoteIdentifier(value: string): string {
     return "`" + value.replace(/`/g, "``") + "`";
 }
@@ -23,13 +27,15 @@ function sqlHeader(campaign: FoilCampaignConfig): string {
 
 export function buildQueryArtifacts(
     project: FoilLabProjectConfig,
-    campaign: FoilCampaignConfig
+    campaign: FoilCampaignConfig,
+    options: FoilQueryOptions = {}
 ): FoilQueryArtifact[] {
     const registry = fullTable(project, "campaign_registry");
     const parameters = fullTable(project, "campaign_parameters");
     const scenarios = fullTable(project, "campaign_scenarios");
     const scenarioParameters = fullTable(project, "scenario_parameters");
     const statistics = fullTable(project, "campaign_design_statistics");
+    const responses = fullTable(project, "scenario_response_results");
 
     const catalog = {
         version: "0.1",
@@ -87,7 +93,21 @@ export function buildQueryArtifacts(
         },
     };
 
-    return [
+    if (options.includeSyntheticResponse === true) {
+        catalog.queries.push({
+            id: "scenario_response",
+            file: "scenario_response.sql",
+            grain: "one row per synthetic scenario response",
+            datasets: ["scenario_response_results"],
+        });
+        catalog.relationships.push({
+            left: "campaign_scenarios.scenario_id",
+            right: "scenario_response_results.scenario_id",
+            cardinality: "one_to_one",
+        });
+    }
+
+    const artifacts: FoilQueryArtifact[] = [
         {
             relativePath: "queries/catalog.json",
             content: `${JSON.stringify(catalog, null, 4)}\n`,
@@ -147,4 +167,22 @@ ORDER BY parameter_path, value_index;
 `,
         },
     ];
+
+    if (options.includeSyntheticResponse === true) {
+        artifacts.push({
+            relativePath: "queries/scenario_response.sql",
+            content:
+                sqlHeader(campaign) +
+                `SELECT campaign_id, source_hash, scenario_id, model_version,
+       result_classification, available_fluid_power_kw, capture_proxy,
+       mechanical_power_proxy_kw, electrical_power_proxy_kw,
+       efficiency_proxy, energy_proxy_kwh, load_proxy_n, assumptions_json
+FROM ${responses}
+WHERE campaign_id = :campaign_id
+ORDER BY scenario_id;
+`,
+        });
+    }
+
+    return artifacts;
 }
