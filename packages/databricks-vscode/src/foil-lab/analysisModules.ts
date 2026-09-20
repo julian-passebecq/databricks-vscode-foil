@@ -162,7 +162,6 @@ if __name__ == "__main__":
 `;
 }
 
-
 export function buildResponseStatisticsRunner(
     project: FoilLabProjectConfig,
     campaign: FoilCampaignConfig,

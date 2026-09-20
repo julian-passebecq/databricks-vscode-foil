@@ -180,8 +180,7 @@ describe("compileCampaign", () => {
         );
         const responseStatistics = plan.artifacts.find(
             (artifact) =>
-                artifact.relativePath ===
-                "src/analyses/response_statistics.py"
+                artifact.relativePath === "src/analyses/response_statistics.py"
         );
         const responseStatisticsQuery = plan.artifacts.find(
             (artifact) =>
@@ -215,9 +214,7 @@ describe("compileCampaign", () => {
         assert.ok(responseQuery?.content.includes("scenario_response_results"));
         assert.ok(responseQuery?.content.includes(":campaign_id"));
         assert.ok(
-            responseStatistics?.content.includes(
-                "campaign_response_statistics"
-            )
+            responseStatistics?.content.includes("campaign_response_statistics")
         );
         assert.ok(
             responseStatistics?.content.includes("SYNTHETIC_MODEL_OUTPUT")
