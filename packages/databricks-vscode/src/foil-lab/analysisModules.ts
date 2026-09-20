@@ -83,7 +83,11 @@ SOURCE_HASH = "${sourceHash}"
 def main():
     spark = SparkSession.builder.getOrCreate()
     gold_schema = PROJECT["databricks"]["goldSchema"]
+    catalog = PROJECT["databricks"].get("catalog")
     campaign_id = CAMPAIGN["campaignId"]
+
+    if catalog:
+        spark.sql(f"USE CATALOG `{catalog}`")
 
     source = (
         spark.table(f"\`{gold_schema}\`.campaign_parameters")
@@ -202,7 +206,11 @@ METRICS = [
 def main():
     spark = SparkSession.builder.getOrCreate()
     gold_schema = PROJECT["databricks"]["goldSchema"]
+    catalog = PROJECT["databricks"].get("catalog")
     campaign_id = CAMPAIGN["campaignId"]
+
+    if catalog:
+        spark.sql(f"USE CATALOG `{catalog}`")
 
     source = (
         spark.table(f"\`{gold_schema}\`.scenario_response_results")
