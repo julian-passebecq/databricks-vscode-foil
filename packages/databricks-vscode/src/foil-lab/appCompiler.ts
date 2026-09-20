@@ -129,8 +129,14 @@ registry = safe_query(
     "Campaign registry",
 )
 
-overview_tab, campaigns_tab, statistics_tab, data_tab = st.tabs(
-    ["Overview", "Campaigns", "Design statistics", "Gold data"]
+overview_tab, campaigns_tab, engineering_tab, statistics_tab, data_tab = st.tabs(
+    [
+        "Overview",
+        "Campaigns",
+        "Synthetic response",
+        "Statistics",
+        "Gold data",
+    ]
 )
 
 with overview_tab:
@@ -200,6 +206,51 @@ with campaigns_tab:
                 hide_index=True,
             )
 
+with engineering_tab:
+    st.caption(
+        "All values in this tab are synthetic model outputs unless a later "
+        "model/version explicitly states otherwise."
+    )
+    responses = safe_query(
+        f"""
+        SELECT campaign_id, source_hash, scenario_id, model_version,
+               result_classification, available_fluid_power_kw, capture_proxy,
+               mechanical_power_proxy_kw, electrical_power_proxy_kw,
+               efficiency_proxy, energy_proxy_kwh, load_proxy_n
+        FROM {full_table("scenario_response_results")}
+        ORDER BY campaign_id, scenario_id
+        LIMIT 20000
+        """,
+        "Synthetic scenario responses",
+    )
+    if responses.empty:
+        st.info("Run a supported synthetic response campaign to populate results.")
+    else:
+        response_campaigns = responses["campaign_id"].drop_duplicates().tolist()
+        response_campaign = st.selectbox(
+            "Response campaign",
+            response_campaigns,
+            key="response_campaign",
+        )
+        selected_responses = responses[
+            responses["campaign_id"] == response_campaign
+        ]
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Response rows", len(selected_responses))
+        c2.metric(
+            "Max electrical proxy (kW)",
+            f'{selected_responses["electrical_power_proxy_kw"].max():.3f}',
+        )
+        c3.metric(
+            "Max efficiency proxy",
+            f'{selected_responses["efficiency_proxy"].max():.3f}',
+        )
+        st.dataframe(
+            selected_responses,
+            use_container_width=True,
+            hide_index=True,
+        )
+
 with statistics_tab:
     statistics = safe_query(
         f"""
@@ -213,10 +264,31 @@ with statistics_tab:
     )
     if not statistics.empty:
         st.caption(
-            "Statistics below summarize configured experiment-design parameters, "
-            "not measured or simulated machine performance."
+            "Design statistics summarize configured experiment parameters only."
         )
         st.dataframe(statistics, use_container_width=True, hide_index=True)
+
+    response_statistics = safe_query(
+        f"""
+        SELECT campaign_id, source_hash, result_classification, metric,
+               value_count, mean_value, stddev_value, min_value, max_value
+        FROM {full_table("campaign_response_statistics")}
+        ORDER BY campaign_id, metric
+        LIMIT 5000
+        """,
+        "Synthetic response statistics",
+    )
+    if not response_statistics.empty:
+        st.subheader("Synthetic response statistics")
+        st.caption(
+            "These statistics summarize SYNTHETIC_MODEL_OUTPUT rows, not "
+            "measured Foil'O performance."
+        )
+        st.dataframe(
+            response_statistics,
+            use_container_width=True,
+            hide_index=True,
+        )
 
 with data_tab:
     st.write("Gold contract")
@@ -259,10 +331,12 @@ export function compileApp(config: FoilAppConfig): FoilAppCompilationPlan {
         "campaign_scenarios",
         "scenario_parameters",
         "campaign_design_statistics",
+        "scenario_response_results",
+        "campaign_response_statistics",
     ];
 
     const manifest = {
-        compilerVersion: "0.2",
+        compilerVersion: "0.3",
         resourceKey: config.appId,
         appName: config.appName,
         deployment: config.deployment,
@@ -272,7 +346,7 @@ export function compileApp(config: FoilAppConfig): FoilAppCompilationPlan {
         sqlWarehouseResource: "foil-sql-warehouse",
         requiredGoldTables,
         prerequisite:
-            "Run at least one campaign with descriptive_statistics before first App deployment.",
+            "Run the baseline synthetic response campaign before first App deployment so all required Gold tables exist.",
     };
 
     return {

@@ -43,10 +43,18 @@ describe("FOIL dashboard compiler", () => {
             datasets: Array<{queryLines: string[]}>;
             pages: Array<{layout: unknown[]}>;
         };
-        assert.strictEqual(parsed.datasets.length, 3);
+        assert.strictEqual(parsed.datasets.length, 5);
         assert.match(
             parsed.datasets[0].queryLines[0],
             /foil\.foil_gold\.campaign_registry/
+        );
+        assert.match(
+            parsed.datasets[3].queryLines[0],
+            /scenario_response_results/
+        );
+        assert.match(
+            parsed.datasets[4].queryLines[0],
+            /campaign_response_statistics/
         );
         assert.strictEqual(parsed.pages[0].layout.length, 0);
     });

@@ -38,7 +38,14 @@ describe("compileApp", () => {
         assert.ok(python?.content.includes("campaign_registry"));
         assert.ok(python?.content.includes("campaign_scenarios"));
         assert.ok(python?.content.includes("Scenario count"));
+        assert.ok(python?.content.includes("scenario_response_results"));
+        assert.ok(python?.content.includes("campaign_response_statistics"));
+        assert.ok(python?.content.includes("SYNTHETIC_MODEL_OUTPUT"));
         assert.ok(plan.requiredGoldTables.includes("scenario_parameters"));
+        assert.ok(plan.requiredGoldTables.includes("scenario_response_results"));
+        assert.ok(
+            plan.requiredGoldTables.includes("campaign_response_statistics")
+        );
         assert.ok(python?.content.includes("read-only Gold layer"));
     });
 

@@ -49,6 +49,8 @@ export function compileDashboard(
         "campaign_registry",
         "campaign_scenarios",
         "campaign_design_statistics",
+        "scenario_response_results",
+        "campaign_response_statistics",
     ];
 
     const serialized = {
@@ -83,6 +85,26 @@ export function compileDashboard(
                     )} ORDER BY campaign_id, parameter_path`,
                 ],
             },
+            {
+                name: "responses",
+                displayName: "FOIL Synthetic Scenario Responses",
+                queryLines: [
+                    `SELECT campaign_id, source_hash, scenario_id, model_version, result_classification, available_fluid_power_kw, capture_proxy, mechanical_power_proxy_kw, electrical_power_proxy_kw, efficiency_proxy, energy_proxy_kwh, load_proxy_n FROM ${fullTable(
+                        config,
+                        "scenario_response_results"
+                    )} ORDER BY campaign_id, scenario_id`,
+                ],
+            },
+            {
+                name: "responsestats",
+                displayName: "FOIL Synthetic Response Statistics",
+                queryLines: [
+                    `SELECT campaign_id, source_hash, result_classification, metric, value_count, mean_value, stddev_value, min_value, max_value FROM ${fullTable(
+                        config,
+                        "campaign_response_statistics"
+                    )} ORDER BY campaign_id, metric`,
+                ],
+            },
         ],
         pages: [
             {
@@ -105,7 +127,7 @@ export function compileDashboard(
 `;
 
     const manifest = {
-        version: "0.1",
+        version: "0.2",
         resourceKey,
         dashboardName,
         sourceLayer: "GOLD",
@@ -116,6 +138,7 @@ export function compileDashboard(
         notes: [
             "The generated dashboard establishes governed Gold datasets and a native AI/BI asset.",
             "Engineering/statistical calculations stay in Gold; the dashboard is presentation only.",
+            "Synthetic response datasets remain explicitly classified as SYNTHETIC_MODEL_OUTPUT.",
             "The first compiler intentionally leaves the canvas layout empty until the serialized widget contract is live-validated against Databricks.",
         ],
     };
