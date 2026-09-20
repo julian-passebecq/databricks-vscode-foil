@@ -24,6 +24,7 @@ export interface FoilLabCampaignSnapshot {
         facts?: unknown[];
         parameters?: unknown[];
         unknowns?: unknown[];
+        controlContract?: Record<string, unknown>;
     };
     model: {
         modelId: string;
@@ -165,6 +166,7 @@ export function materializeLabSnapshot(
             referenceFacts: snapshot.machine.facts ?? [],
             parameterDefinitions: snapshot.machine.parameters ?? [],
             unresolvedEngineering: snapshot.machine.unknowns ?? [],
+            controlContract: snapshot.machine.controlContract,
             studyId: snapshot.study.studyId,
             snapshotId: snapshot.snapshotId,
         },

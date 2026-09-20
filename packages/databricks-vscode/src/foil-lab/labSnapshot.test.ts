@@ -20,6 +20,15 @@ const SNAPSHOT = {
         facts: [],
         parameters: [],
         unknowns: [],
+        controlContract: {
+            contractVersion: "1.0",
+            revision: "2026-09-20.1",
+            sourceHierarchy: {
+                technicalAnchor: "SRC-WIND-TECH-20260714",
+            },
+            knownUnknowns: ["validated wind power curve"],
+            openControlItems: ["GAP-WIND-DATA-001"],
+        },
     },
     model: {
         modelId: "wind_parametric_v1",
@@ -87,6 +96,10 @@ describe("FOIL Lab campaign snapshot", () => {
                 }
             ).physics?.availablePowerRelation,
             "0.5 * rho * A_effective * |V|^3"
+        );
+        assert.deepStrictEqual(
+            materialized.machine.parameters?.controlContract,
+            SNAPSHOT.machine.controlContract
         );
     });
 
