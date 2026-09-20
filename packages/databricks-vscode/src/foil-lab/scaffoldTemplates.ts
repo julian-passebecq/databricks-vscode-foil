@@ -16,11 +16,11 @@ export const PROJECT_CONFIG = {
 export const EOLIEN_MACHINE = {
     machineId: "eolien_lab_v1",
     technology: "EOLIEN",
-    status: "ACTIVE",
+    status: "EXPERIMENTAL",
     classification: "SYNTHETIC",
     modelVersion: "wind_proxy_v1",
     description:
-        "Active synthetic wind-machine profile. Engineering values remain demo/synthetic until explicitly replaced by approved evidence.",
+        "Placeholder synthetic wind profile used before a frozen current machine snapshot is imported. It is not the active company machine truth.",
 };
 
 export const HYDRO_REFERENCE_MACHINE = {
