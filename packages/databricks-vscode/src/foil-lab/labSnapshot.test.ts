@@ -37,7 +37,7 @@ const SNAPSHOT = {
         campaignId: "CAMP-WIND-001",
         objective: "Run a baseline parameter sweep.",
         classification: "SYNTHETIC",
-        inputs: {wind_speed: [6, 8, 10]},
+        inputs: {windSpeed: [6, 8, 10]},
         analyses: [{module: "descriptive_statistics", enabled: true}],
     },
 };
@@ -59,7 +59,7 @@ describe("FOIL Lab campaign snapshot", () => {
         );
         assert.strictEqual(materialized.campaign.campaignId, "CAMP-WIND-001");
         assert.deepStrictEqual(materialized.campaign.test, {
-            wind_speed: [6, 8, 10],
+            windSpeed: [6, 8, 10],
         });
     });
 
