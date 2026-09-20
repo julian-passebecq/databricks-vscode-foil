@@ -80,11 +80,12 @@ export class FoilLabModel {
             return this._state;
         }
 
-        if (
-            project.config?.controlContextFile !== undefined
-        ) {
-            const projectRoot = this.workspaceFolderManager.activeProjectUri.fsPath;
-            const contextPath = path.isAbsolute(project.config.controlContextFile)
+        if (project.config?.controlContextFile !== undefined) {
+            const projectRoot =
+                this.workspaceFolderManager.activeProjectUri.fsPath;
+            const contextPath = path.isAbsolute(
+                project.config.controlContextFile
+            )
                 ? project.config.controlContextFile
                 : path.resolve(projectRoot, project.config.controlContextFile);
             const contextRaw = await this.readJson(contextPath);
@@ -102,7 +103,9 @@ export class FoilLabModel {
                 });
             } else {
                 const context = contextRaw as Record<string, unknown>;
-                if (context.schema !== "foil-control/databricks-lab-context-v1") {
+                if (
+                    context.schema !== "foil-control/databricks-lab-context-v1"
+                ) {
                     project.issues.push({
                         severity: "warning",
                         path: "controlContextFile",
@@ -116,7 +119,9 @@ export class FoilLabModel {
                     activeMachine !== null &&
                     !Array.isArray(activeMachine)
                 ) {
-                    const technology = (activeMachine as Record<string, unknown>).technology;
+                    const technology = (
+                        activeMachine as Record<string, unknown>
+                    ).technology;
                     if (
                         typeof technology === "string" &&
                         technology !== project.config.activeTechnology

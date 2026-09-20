@@ -137,7 +137,11 @@ export class FoilLabManager implements Disposable {
             );
 
             await Promise.all([
-                writeFile(frozenPath, `${JSON.stringify(snapshot, null, 4)}\n`, "utf8"),
+                writeFile(
+                    frozenPath,
+                    `${JSON.stringify(snapshot, null, 4)}\n`,
+                    "utf8"
+                ),
                 writeFile(
                     machinePath,
                     `${JSON.stringify(materialized.machine, null, 4)}\n`,
@@ -210,7 +214,11 @@ export class FoilLabManager implements Disposable {
 
         const target = path.join(root, "machines", "eolien_lab_v1.json");
         await mkdir(path.dirname(target), {recursive: true});
-        await writeFile(target, `${JSON.stringify(machine, null, 4)}\n`, "utf8");
+        await writeFile(
+            target,
+            `${JSON.stringify(machine, null, 4)}\n`,
+            "utf8"
+        );
         await this.model.refresh();
         return target;
     }

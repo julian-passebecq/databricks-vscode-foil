@@ -106,14 +106,17 @@ describe("compileCampaign", () => {
         const manifest = plan.artifacts.find(
             (artifact) => artifact.relativePath === "manifest.json"
         );
-        assert.ok(manifest?.content.includes('"controlMachineId": "MACHINE-WIND-001"'));
+        assert.ok(
+            manifest?.content.includes('"controlMachineId": "MACHINE-WIND-001"')
+        );
         assert.ok(manifest?.content.includes('"controlDigest": "abc123"'));
 
         const queryCatalog = plan.artifacts.find(
             (artifact) => artifact.relativePath === "queries/catalog.json"
         );
         const scenarioQuery = plan.artifacts.find(
-            (artifact) => artifact.relativePath === "queries/scenario_matrix.sql"
+            (artifact) =>
+                artifact.relativePath === "queries/scenario_matrix.sql"
         );
         assert.ok(queryCatalog?.content.includes('"sourceLayer": "GOLD"'));
         assert.ok(scenarioQuery?.content.includes(":campaign_id"));

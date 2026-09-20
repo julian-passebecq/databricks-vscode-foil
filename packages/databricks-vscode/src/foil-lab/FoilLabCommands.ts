@@ -290,7 +290,9 @@ export class FoilLabCommands {
             );
         } catch (e) {
             window.showErrorMessage(
-                `Unable to generate FOIL AI/BI dashboard: ${(e as Error).message}`
+                `Unable to generate FOIL AI/BI dashboard: ${
+                    (e as Error).message
+                }`
             );
         }
     };

@@ -22,17 +22,10 @@
             "minLength": 1
         },
         "activeTechnology": {
-            "enum": [
-                "EOLIEN",
-                "HYDROLIEN",
-                "PROPULSION"
-            ]
+            "enum": ["EOLIEN", "HYDROLIEN", "PROPULSION"]
         },
         "defaultClassification": {
-            "enum": [
-                "SYNTHETIC",
-                "SANITIZED_APPROVED"
-            ]
+            "enum": ["SYNTHETIC", "SANITIZED_APPROVED"]
         },
         "allowRealData": {
             "const": false,
@@ -41,12 +34,7 @@
         "databricks": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-                "target",
-                "goldSchema",
-                "labJob",
-                "appResource"
-            ],
+            "required": ["target", "goldSchema", "labJob", "appResource"],
             "properties": {
                 "target": {
                     "type": "string",

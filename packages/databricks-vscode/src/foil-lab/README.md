@@ -34,13 +34,11 @@ The bridge is intentionally file-based:
 
 The imported profile records the control-machine ID and revision inside the Databricks project. Databricks campaigns may vary synthetic scenario parameters, but they do not write engineering facts back into the company control repository.
 
-
 ## AI/BI dashboard compiler
 
 The lab can now generate a native Databricks AI/BI dashboard asset plus its Declarative Automation Bundle resource. The first dashboard compiler binds governed Gold datasets for campaign registry, scenario matrix, and design statistics. It deliberately leaves the canvas layout empty until widget serialization is validated against a live workspace; this avoids treating an unstable presentation detail as a scientific contract.
 
 Campaign manifests persist the imported control-machine provenance (`sourceRepo`, `controlMachineId`, `revision`, `controlDigest`) when a machine was synchronized from `foil-control-v1`. That provenance is part of the deterministic campaign source hash and can be recovered from the Gold `machine_json` field without introducing a second company truth.
-
 
 ## MongoDB lab boundary
 

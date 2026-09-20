@@ -132,7 +132,9 @@ export function materializeLabSnapshot(
     rawJson: string,
     snapshotPath: string
 ): {machine: FoilMachineConfig; campaign: FoilCampaignConfig} {
-    const snapshotHash = createHash("sha256").update(rawJson, "utf8").digest("hex");
+    const snapshotHash = createHash("sha256")
+        .update(rawJson, "utf8")
+        .digest("hex");
 
     const machine: FoilMachineConfig = {
         machineId: snapshot.machine.machineId,

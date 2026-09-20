@@ -726,9 +726,7 @@ export function compileCampaign(
         },
         {
             relativePath: "ui/campaign-page.json",
-            content: prettyJson(
-                buildAppPageIntent(project, machine, campaign)
-            ),
+            content: prettyJson(buildAppPageIntent(project, machine, campaign)),
         },
         {
             relativePath: "bundle-include.txt",

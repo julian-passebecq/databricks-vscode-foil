@@ -27,10 +27,14 @@ export function compileDashboard(
     config: FoilAppConfig
 ): FoilDashboardCompilationPlan {
     if (!SAFE_RESOURCE.test(config.appId)) {
-        throw new Error("Dashboard resource key is not safe for a Databricks bundle.");
+        throw new Error(
+            "Dashboard resource key is not safe for a Databricks bundle."
+        );
     }
     if (!SAFE_IDENTIFIER.test(config.catalog)) {
-        throw new Error("Configure a simple Unity Catalog catalog identifier first.");
+        throw new Error(
+            "Configure a simple Unity Catalog catalog identifier first."
+        );
     }
     if (!SAFE_IDENTIFIER.test(config.goldSchema)) {
         throw new Error("Gold schema is not a safe Unity Catalog identifier.");
@@ -53,21 +57,30 @@ export function compileDashboard(
                 name: "campaigns",
                 displayName: "FOIL Campaign Registry",
                 queryLines: [
-                    `SELECT campaign_id, source_hash, technology, machine_id, machine_model_version, classification, objective, compiled_at_utc FROM ${fullTable(config, "campaign_registry")} ORDER BY compiled_at_utc DESC`,
+                    `SELECT campaign_id, source_hash, technology, machine_id, machine_model_version, classification, objective, compiled_at_utc FROM ${fullTable(
+                        config,
+                        "campaign_registry"
+                    )} ORDER BY compiled_at_utc DESC`,
                 ],
             },
             {
                 name: "scenarios",
                 displayName: "FOIL Scenario Matrix",
                 queryLines: [
-                    `SELECT campaign_id, source_hash, scenario_index, scenario_id, parameters_json FROM ${fullTable(config, "campaign_scenarios")} ORDER BY campaign_id, scenario_index`,
+                    `SELECT campaign_id, source_hash, scenario_index, scenario_id, parameters_json FROM ${fullTable(
+                        config,
+                        "campaign_scenarios"
+                    )} ORDER BY campaign_id, scenario_index`,
                 ],
             },
             {
                 name: "designstats",
                 displayName: "FOIL Design Statistics",
                 queryLines: [
-                    `SELECT campaign_id, source_hash, parameter_path, value_count, mean_value, stddev_value, min_value, max_value FROM ${fullTable(config, "campaign_design_statistics")} ORDER BY campaign_id, parameter_path`,
+                    `SELECT campaign_id, source_hash, parameter_path, value_count, mean_value, stddev_value, min_value, max_value FROM ${fullTable(
+                        config,
+                        "campaign_design_statistics"
+                    )} ORDER BY campaign_id, parameter_path`,
                 ],
             },
         ],

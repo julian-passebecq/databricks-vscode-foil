@@ -14,7 +14,9 @@ function quoteIdentifier(value: string): string {
 }
 
 function fullTable(project: FoilLabProjectConfig, table: string): string {
-    return `${quoteIdentifier(project.databricks.goldSchema)}.${quoteIdentifier(table)}`;
+    return `${quoteIdentifier(project.databricks.goldSchema)}.${quoteIdentifier(
+        table
+    )}`;
 }
 
 function sqlHeader(campaign: FoilCampaignConfig): string {

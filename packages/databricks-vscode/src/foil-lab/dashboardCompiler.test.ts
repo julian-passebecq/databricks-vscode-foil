@@ -36,8 +36,7 @@ describe("FOIL dashboard compiler", () => {
         const plan = compileDashboard(CONFIG);
         const dashboard = plan.artifacts.find(
             (artifact) =>
-                artifact.relativePath ===
-                "dashboard/foil-results.lvdash.json"
+                artifact.relativePath === "dashboard/foil-results.lvdash.json"
         );
         assert.ok(dashboard);
         const parsed = JSON.parse(dashboard.content) as {
@@ -45,7 +44,10 @@ describe("FOIL dashboard compiler", () => {
             pages: Array<{layout: unknown[]}>;
         };
         assert.strictEqual(parsed.datasets.length, 3);
-        assert.match(parsed.datasets[0].queryLines[0], /foil\.foil_gold\.campaign_registry/);
+        assert.match(
+            parsed.datasets[0].queryLines[0],
+            /foil\.foil_gold\.campaign_registry/
+        );
         assert.strictEqual(parsed.pages[0].layout.length, 0);
     });
 

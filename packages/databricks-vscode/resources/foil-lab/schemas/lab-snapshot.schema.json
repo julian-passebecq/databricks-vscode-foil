@@ -33,11 +33,7 @@
         "source": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-                "database",
-                "studyId",
-                "campaignId"
-            ],
+            "required": ["database", "studyId", "campaignId"],
             "properties": {
                 "database": {
                     "const": "foil_lab"
@@ -55,12 +51,7 @@
         "machine": {
             "type": "object",
             "additionalProperties": true,
-            "required": [
-                "machineId",
-                "revision",
-                "technology",
-                "status"
-            ],
+            "required": ["machineId", "revision", "technology", "status"],
             "properties": {
                 "machineId": {
                     "type": "string",
@@ -71,18 +62,10 @@
                     "minLength": 1
                 },
                 "technology": {
-                    "enum": [
-                        "EOLIEN",
-                        "HYDROLIEN",
-                        "PROPULSION"
-                    ]
+                    "enum": ["EOLIEN", "HYDROLIEN", "PROPULSION"]
                 },
                 "status": {
-                    "enum": [
-                        "ACTIVE",
-                        "REFERENCE_ONLY",
-                        "EXPERIMENTAL"
-                    ]
+                    "enum": ["ACTIVE", "REFERENCE_ONLY", "EXPERIMENTAL"]
                 },
                 "facts": {
                     "type": "array"
@@ -119,10 +102,7 @@
                     "minLength": 1
                 },
                 "classification": {
-                    "enum": [
-                        "SYNTHETIC",
-                        "SANITIZED_APPROVED"
-                    ]
+                    "enum": ["SYNTHETIC", "SANITIZED_APPROVED"]
                 },
                 "maturityLevel": {
                     "type": "integer",
@@ -133,11 +113,7 @@
         "study": {
             "type": "object",
             "additionalProperties": true,
-            "required": [
-                "studyId",
-                "title",
-                "objective"
-            ],
+            "required": ["studyId", "title", "objective"],
             "properties": {
                 "studyId": {
                     "type": "string",
@@ -173,10 +149,7 @@
                     "minLength": 1
                 },
                 "classification": {
-                    "enum": [
-                        "SYNTHETIC",
-                        "SANITIZED_APPROVED"
-                    ]
+                    "enum": ["SYNTHETIC", "SANITIZED_APPROVED"]
                 },
                 "inputs": {
                     "type": "object"

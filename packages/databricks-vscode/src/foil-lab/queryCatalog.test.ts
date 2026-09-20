@@ -33,7 +33,8 @@ describe("buildQueryArtifacts", () => {
             (artifact) => artifact.relativePath === "queries/catalog.json"
         );
         const scenarios = artifacts.find(
-            (artifact) => artifact.relativePath === "queries/scenario_matrix.sql"
+            (artifact) =>
+                artifact.relativePath === "queries/scenario_matrix.sql"
         );
 
         assert.ok(catalog?.content.includes('"sourceLayer": "GOLD"'));
