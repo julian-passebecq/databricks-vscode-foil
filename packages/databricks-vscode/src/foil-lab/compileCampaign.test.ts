@@ -86,7 +86,7 @@ describe("compileCampaign", () => {
         assert.ok(runner?.content.includes("scenario_parameters"));
         assert.ok(runner?.content.includes("build_scenarios"));
         assert.ok(runner?.content.includes("scenario_count"));
-        assert.ok(runner?.content.includes("statistical, or ML results"));
+        assert.ok(runner?.content.includes("deterministic parameter design"));
         assert.ok(job?.content.includes("task_key: descriptive_statistics"));
         assert.ok(job?.content.includes("depends_on:"));
         assert.ok(statistics?.content.includes("campaign_design_statistics"));
@@ -110,6 +110,11 @@ describe("compileCampaign", () => {
             manifest?.content.includes('"controlMachineId": "MACHINE-WIND-001"')
         );
         assert.ok(manifest?.content.includes('"controlDigest": "abc123"'));
+        assert.ok(
+            manifest?.content.includes(
+                '"engineeringResultsGeneratedByThisStage": false'
+            )
+        );
 
         const queryCatalog = plan.artifacts.find(
             (artifact) => artifact.relativePath === "queries/catalog.json"
