@@ -250,7 +250,7 @@ def main():
     compiled_at = datetime.now(timezone.utc).isoformat()
 
     if catalog:
-        spark.sql(f"USE CATALOG \\`{catalog}\\`")
+        spark.sql(f"USE CATALOG \`{catalog}\`")
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS \`{gold_schema}\`")
     spark.sql(
         f"""
