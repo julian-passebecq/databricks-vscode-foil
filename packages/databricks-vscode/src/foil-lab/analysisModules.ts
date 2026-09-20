@@ -87,7 +87,7 @@ def main():
     campaign_id = CAMPAIGN["campaignId"]
 
     if catalog:
-        spark.sql(f"USE CATALOG `{catalog}`")
+        spark.sql(f"USE CATALOG \`{catalog}\`")
 
     source = (
         spark.table(f"\`{gold_schema}\`.campaign_parameters")
@@ -210,7 +210,7 @@ def main():
     campaign_id = CAMPAIGN["campaignId"]
 
     if catalog:
-        spark.sql(f"USE CATALOG `{catalog}`")
+        spark.sql(f"USE CATALOG \`{catalog}\`")
 
     source = (
         spark.table(f"\`{gold_schema}\`.scenario_response_results")
