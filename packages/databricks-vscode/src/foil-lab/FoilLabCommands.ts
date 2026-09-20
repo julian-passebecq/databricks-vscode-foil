@@ -110,7 +110,7 @@ export class FoilLabCommands {
                 canSelectFolders: false,
                 title: "Import FOIL machine or campaign snapshot",
                 openLabel: "Import FOIL snapshot",
-                filters: {"FOIL snapshot": ["json"]},
+                filters: {foilSnapshot: ["json"]},
             });
             if (!selected?.[0]) {
                 return;
