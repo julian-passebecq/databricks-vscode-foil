@@ -121,6 +121,10 @@ import {
     UnityCatalogTreeNode,
 } from "./ui/unity-catalog/UnityCatalogTreeDataProvider";
 import {registerDetailPanel} from "./ui/unity-catalog/registerDetailPanel";
+import {FoilLabCommands} from "./foil-lab/FoilLabCommands";
+import {FoilLabManager} from "./foil-lab/FoilLabManager";
+import {FoilLabModel} from "./foil-lab/FoilLabModel";
+import {FoilLabTreeDataProvider} from "./ui/foil-lab/FoilLabTreeDataProvider";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const packageJson = require("../package.json");
@@ -737,6 +741,128 @@ export async function activate(
         workspaceFolderManager,
         customWhenContext,
         telemetry
+    );
+
+    // FOIL Virtual Lab: project contracts and safe orchestration over the
+    // existing Databricks connection and bundle primitives.
+    const foilLabModel = new FoilLabModel(workspaceFolderManager);
+    const foilLabManager = new FoilLabManager(
+        foilLabModel,
+        workspaceFolderManager,
+        bundleFileSet
+    );
+    await foilLabManager.initialize();
+    const foilLabCommands = new FoilLabCommands(
+        foilLabManager,
+        foilLabModel,
+        bundleValidateModel
+    );
+    const foilLabTreeDataProvider = new FoilLabTreeDataProvider(foilLabModel);
+    context.subscriptions.push(
+        foilLabModel,
+        foilLabManager,
+        foilLabTreeDataProvider,
+        window.registerTreeDataProvider("foilLabView", foilLabTreeDataProvider),
+        telemetry.registerCommand(
+            "databricks.foilLab.initialize",
+            foilLabCommands.initializeProject,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.refresh",
+            foilLabCommands.refresh,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.validate",
+            foilLabCommands.validateProject,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.validateBundle",
+            foilLabCommands.validateBundle,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.deploy",
+            foilLabCommands.deploy,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.deployAndRun",
+            foilLabCommands.deployAndRun,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.configureLogin",
+            foilLabCommands.configureLogin,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.focusGold",
+            foilLabCommands.focusGold,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.openProjectConfig",
+            foilLabCommands.openProjectConfig,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.openAppSpec",
+            foilLabCommands.openAppSpec,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.importControlMachine",
+            foilLabCommands.importControlMachine,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.importBundledBaseline",
+            foilLabCommands.importBundledBaseline,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.createCampaign",
+            foilLabCommands.createCampaign,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.compileCampaign",
+            foilLabCommands.compileCampaign,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.applyCampaign",
+            foilLabCommands.applyCampaign,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.configureApp",
+            foilLabCommands.configureApp,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.generateApp",
+            foilLabCommands.generateApp,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.applyApp",
+            foilLabCommands.applyApp,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.generateDashboard",
+            foilLabCommands.generateDashboard,
+            foilLabCommands
+        ),
+        telemetry.registerCommand(
+            "databricks.foilLab.applyDashboard",
+            foilLabCommands.applyDashboard,
+            foilLabCommands
+        )
     );
     const packageManagerTelemetry = new PackageManagerTelemetry(
         telemetry,

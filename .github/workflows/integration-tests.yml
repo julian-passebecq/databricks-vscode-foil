@@ -7,7 +7,15 @@ on:
   merge_group:
 
 jobs:
+  fork-note:
+    name: Fork integration tests not applicable
+    if: github.repository_owner != 'databricks'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Databricks private integration runner/secrets are unavailable in forks; FOIL fork validation is handled by FOIL Extension CI."
+
   check-token:
+    if: github.repository_owner == 'databricks'
     name: Check secrets access
 
     runs-on:
@@ -117,7 +125,7 @@ jobs:
   # The hash for the merge queue may not be the same as the hash for the PR.
   # Auto approve the check for the merge queue to avoid running integration tests twice.
   auto-approve:
-    if: github.event_name == 'merge_group'
+    if: github.repository_owner == 'databricks' && github.event_name == 'merge_group'
 
     runs-on:
       group: databricks-protected-runner-group

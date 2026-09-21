@@ -1,0 +1,730 @@
+{
+    "schema": "foil-lab/campaign-snapshot-v1",
+    "schemaVersion": 1,
+    "snapshotId": "SNAP-CAMP-WIND-BASELINE-002-v1",
+    "generatedAt": "2026-09-21T20:51:00+02:00",
+    "source": {
+        "database": "foil_lab",
+        "studyId": "STUDY-WIND-BASELINE-001",
+        "campaignId": "CAMP-WIND-BASELINE-002"
+    },
+    "machine": {
+        "machineId": "MACHINE-WIND-001",
+        "revision": "2026-09-21.2",
+        "technology": "EOLIEN",
+        "status": "ACTIVE",
+        "facts": [
+            {
+                "id": "WIND-001",
+                "topic": "architecture",
+                "value": "active oscillating bi-foil fluid-flow energy converter",
+                "evidenceClass": "SOURCE_BACKED",
+                "sourceId": "SRC-WIND-TECH-20260714",
+                "usePolicy": "MODEL_CONTEXT"
+            },
+            {
+                "id": "WIND-002",
+                "topic": "reference power",
+                "value": 2,
+                "unit": "kW",
+                "qualifier": "approximately",
+                "evidenceClass": "SOURCE_BACKED",
+                "sourceId": "SRC-WIND-TECH-20260714",
+                "usePolicy": "CONTEXT_ONLY",
+                "note": "Test-scale reference, not commercial rating or validated power curve."
+            },
+            {
+                "id": "WIND-003",
+                "topic": "experimental envelope",
+                "value": "~1.5 x 1.5",
+                "unit": "m",
+                "evidenceClass": "SOURCE_BACKED",
+                "sourceId": "SRC-WIND-TECH-20260714",
+                "usePolicy": "CONTEXT_ONLY",
+                "note": "Not final commercial geometry."
+            },
+            {
+                "id": "WIND-004",
+                "topic": "target TRL",
+                "value": 5,
+                "qualifier": "approximately",
+                "evidenceClass": "TARGET",
+                "sourceId": "SRC-WIND-TECH-20260714",
+                "usePolicy": "CONTEXT_ONLY"
+            },
+            {
+                "id": "WIND-014",
+                "topic": "bi-foil phase relation",
+                "value": 90,
+                "unit": "deg",
+                "evidenceClass": "SOURCE_BACKED",
+                "sourceId": "SRC-WIND-SCIENTIST-FRANCIS-20260921",
+                "usePolicy": "BASELINE_KINEMATICS",
+                "note": "Current correction: 90 degrees, not 180 degrees."
+            },
+            {
+                "id": "WIND-015",
+                "topic": "wind-direction orientation / yaw architecture",
+                "value": "upper head and attached two-foil mechanism rotate about the mast vertical axis using wind-direction sensor input; mast/support remain stationary",
+                "evidenceClass": "SOURCE_BACKED",
+                "sourceId": "SRC-WIND-SCIENTIST-FRANCIS-20260921",
+                "usePolicy": "MODEL_ARCHITECTURE_CONTEXT",
+                "note": "Detailed yaw range/hardware/control law remain unknown."
+            }
+        ],
+        "parameters": [
+            {
+                "id": "wind_speed",
+                "category": "ENVIRONMENT",
+                "unit": "m/s",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "air_density",
+                "category": "ENVIRONMENT",
+                "unit": "kg/m3",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "turbulence_intensity",
+                "category": "ENVIRONMENT",
+                "unit": "%",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "foil_span",
+                "category": "GEOMETRY",
+                "unit": "m",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "foil_chord",
+                "category": "GEOMETRY",
+                "unit": "m",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "heave_amplitude",
+                "category": "CONTROL",
+                "unit": "m",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "pitch_amplitude",
+                "category": "CONTROL",
+                "unit": "deg",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "frequency",
+                "category": "CONTROL",
+                "unit": "Hz",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "phase",
+                "category": "CONTROL",
+                "unit": "deg",
+                "evidenceClass": "SOURCE_BACKED",
+                "valueStatus": "CURRENT_SOURCE_BACKED",
+                "value": 90,
+                "campaignCanOverride": true,
+                "overrideRule": "Only as an explicitly labeled sensitivity/hypothesis study; current baseline truth remains 90 degrees."
+            },
+            {
+                "id": "yaw",
+                "category": "CONTROL",
+                "unit": "deg",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "NUMERIC_RANGE_UNKNOWN",
+                "campaignCanOverride": true,
+                "note": "Head-only rotation architecture is source-backed; numeric range remains unknown."
+            },
+            {
+                "id": "generator_efficiency",
+                "category": "CONVERSION",
+                "unit": "%",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "availability",
+                "category": "OPERATIONS",
+                "unit": "%",
+                "evidenceClass": "MODEL_ASSUMPTION",
+                "valueStatus": "UNKNOWN",
+                "campaignCanOverride": true
+            }
+        ],
+        "unknowns": [
+            {
+                "id": "WUNK-01",
+                "topic": "validated wind power curve",
+                "priority": "HIGH"
+            },
+            {
+                "id": "WUNK-02",
+                "topic": "measured Cp",
+                "priority": "HIGH"
+            },
+            {
+                "id": "WUNK-03",
+                "topic": "final commercial geometry",
+                "priority": "HIGH"
+            },
+            {
+                "id": "WUNK-04",
+                "topic": "exact foil profile/span/chord",
+                "priority": "HIGH"
+            },
+            {
+                "id": "WUNK-05",
+                "topic": "heave/pitch amplitude ranges and detailed yaw range/control law/hardware",
+                "priority": "HIGH"
+            },
+            {
+                "id": "WUNK-06",
+                "topic": "machine mass/CG",
+                "priority": "HIGH"
+            },
+            {
+                "id": "WUNK-07",
+                "topic": "ballast/mooring architecture",
+                "priority": "HIGH"
+            },
+            {
+                "id": "WUNK-11",
+                "topic": "meaning of low-wind 30-degree scientist remark",
+                "priority": "MEDIUM"
+            }
+        ],
+        "controlContract": {
+            "_id": "MACHINE-WIND-001@2026-09-21.2",
+            "schema": "foil-lab/machine-contract-v1",
+            "schemaVersion": 1,
+            "machineId": "MACHINE-WIND-001",
+            "revision": "2026-09-21.2",
+            "technology": "EOLIEN",
+            "status": "ACTIVE",
+            "source": {
+                "database": "foil_control",
+                "collection": "machines",
+                "documentId": "MACHINE-WIND-001",
+                "importedAt": "2026-09-21"
+            },
+            "classification": "SOURCE_AND_ASSUMPTION_MIXED",
+            "facts": [
+                {
+                    "id": "WIND-001",
+                    "topic": "architecture",
+                    "value": "active oscillating bi-foil fluid-flow energy converter",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "SRC-WIND-TECH-20260714",
+                    "usePolicy": "MODEL_CONTEXT"
+                },
+                {
+                    "id": "WIND-002",
+                    "topic": "reference power",
+                    "value": 2,
+                    "unit": "kW",
+                    "qualifier": "approximately",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "SRC-WIND-TECH-20260714",
+                    "usePolicy": "CONTEXT_ONLY",
+                    "note": "Test-scale reference, not commercial rating or validated power curve."
+                },
+                {
+                    "id": "WIND-003",
+                    "topic": "experimental envelope",
+                    "value": "~1.5 x 1.5",
+                    "unit": "m",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "SRC-WIND-TECH-20260714",
+                    "usePolicy": "CONTEXT_ONLY",
+                    "note": "Not final commercial geometry."
+                },
+                {
+                    "id": "WIND-004",
+                    "topic": "target TRL",
+                    "value": 5,
+                    "qualifier": "approximately",
+                    "evidenceClass": "TARGET",
+                    "sourceId": "SRC-WIND-TECH-20260714",
+                    "usePolicy": "CONTEXT_ONLY"
+                },
+                {
+                    "id": "WIND-014",
+                    "topic": "bi-foil phase relation",
+                    "value": 90,
+                    "unit": "deg",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "SRC-WIND-SCIENTIST-FRANCIS-20260921",
+                    "usePolicy": "BASELINE_KINEMATICS",
+                    "note": "Current correction: 90 degrees, not 180 degrees."
+                },
+                {
+                    "id": "WIND-015",
+                    "topic": "wind-direction orientation / yaw architecture",
+                    "value": "upper head and attached two-foil mechanism rotate about the mast vertical axis using wind-direction sensor input; mast/support remain stationary",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "SRC-WIND-SCIENTIST-FRANCIS-20260921",
+                    "usePolicy": "MODEL_ARCHITECTURE_CONTEXT",
+                    "note": "Detailed yaw range/hardware/control law remain unknown."
+                }
+            ],
+            "architecture": [
+                {
+                    "component": "foils",
+                    "description": "two active oscillating foils",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "WIND-001"
+                },
+                {
+                    "component": "pitch_orientation",
+                    "description": "orientable pitch / active kinematics",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "SRC-WIND-TECH-20260714"
+                },
+                {
+                    "component": "yaw_orientation",
+                    "description": "upper head plus foil assembly rotates around mast vertical axis; mast/support stationary",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "WIND-015"
+                },
+                {
+                    "component": "generator",
+                    "description": "synchronous generator referenced in prototype description",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "SRC-WIND-TECH-20260714"
+                },
+                {
+                    "component": "transmission",
+                    "description": "mechanical transmission / integration",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "sourceId": "SRC-WIND-TECH-20260714"
+                }
+            ],
+            "parameters": [
+                {
+                    "id": "wind_speed",
+                    "category": "ENVIRONMENT",
+                    "unit": "m/s",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "air_density",
+                    "category": "ENVIRONMENT",
+                    "unit": "kg/m3",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "turbulence_intensity",
+                    "category": "ENVIRONMENT",
+                    "unit": "%",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "foil_span",
+                    "category": "GEOMETRY",
+                    "unit": "m",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "foil_chord",
+                    "category": "GEOMETRY",
+                    "unit": "m",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "heave_amplitude",
+                    "category": "CONTROL",
+                    "unit": "m",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "pitch_amplitude",
+                    "category": "CONTROL",
+                    "unit": "deg",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "frequency",
+                    "category": "CONTROL",
+                    "unit": "Hz",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "phase",
+                    "category": "CONTROL",
+                    "unit": "deg",
+                    "evidenceClass": "SOURCE_BACKED",
+                    "valueStatus": "CURRENT_SOURCE_BACKED",
+                    "value": 90,
+                    "campaignCanOverride": true,
+                    "overrideRule": "Only as an explicitly labeled sensitivity/hypothesis study; current baseline truth remains 90 degrees."
+                },
+                {
+                    "id": "yaw",
+                    "category": "CONTROL",
+                    "unit": "deg",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "NUMERIC_RANGE_UNKNOWN",
+                    "campaignCanOverride": true,
+                    "note": "Head-only rotation architecture is source-backed; numeric range remains unknown."
+                },
+                {
+                    "id": "generator_efficiency",
+                    "category": "CONVERSION",
+                    "unit": "%",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "availability",
+                    "category": "OPERATIONS",
+                    "unit": "%",
+                    "evidenceClass": "MODEL_ASSUMPTION",
+                    "valueStatus": "UNKNOWN",
+                    "campaignCanOverride": true
+                }
+            ],
+            "unknowns": [
+                {
+                    "id": "WUNK-01",
+                    "topic": "validated wind power curve",
+                    "priority": "HIGH"
+                },
+                {
+                    "id": "WUNK-02",
+                    "topic": "measured Cp",
+                    "priority": "HIGH"
+                },
+                {
+                    "id": "WUNK-03",
+                    "topic": "final commercial geometry",
+                    "priority": "HIGH"
+                },
+                {
+                    "id": "WUNK-04",
+                    "topic": "exact foil profile/span/chord",
+                    "priority": "HIGH"
+                },
+                {
+                    "id": "WUNK-05",
+                    "topic": "heave/pitch amplitude ranges and detailed yaw range/control law/hardware",
+                    "priority": "HIGH"
+                },
+                {
+                    "id": "WUNK-06",
+                    "topic": "machine mass/CG",
+                    "priority": "HIGH"
+                },
+                {
+                    "id": "WUNK-07",
+                    "topic": "ballast/mooring architecture",
+                    "priority": "HIGH"
+                },
+                {
+                    "id": "WUNK-11",
+                    "topic": "meaning of low-wind 30-degree scientist remark",
+                    "priority": "MEDIUM"
+                }
+            ],
+            "rules": [
+                "Source-backed facts are context unless explicitly marked as model inputs.",
+                "Baseline phase relation is 90 degrees per WIND-014.",
+                "The ambiguous low-wind 30-degree remark is not a baseline parameter until clarified.",
+                "Unknown parameters may be varied only as explicit SYNTHETIC campaign assumptions.",
+                "Campaign outputs never overwrite company machine truth.",
+                "Hydro values must not be imported into current Wind studies."
+            ],
+            "createdAt": "2026-09-21"
+        }
+    },
+    "model": {
+        "modelId": "wind_parametric_v1",
+        "version": "0.1",
+        "status": "READY_FOR_BASELINE",
+        "classification": "SYNTHETIC",
+        "maturityLevel": 1,
+        "purpose": "Initial parametric response model for reproducible Databricks scenario studies. Not a validated industrial digital twin.",
+        "inputs": [
+            "wind_speed",
+            "air_density",
+            "turbulence_intensity",
+            "foil_span",
+            "foil_chord",
+            "heave_amplitude",
+            "pitch_amplitude",
+            "frequency",
+            "phase",
+            "yaw",
+            "generator_efficiency"
+        ],
+        "intendedOutputs": [
+            "available_fluid_power",
+            "capture_proxy",
+            "mechanical_power_proxy",
+            "electrical_power_proxy",
+            "efficiency_proxy",
+            "energy_proxy",
+            "load_proxy"
+        ],
+        "physics": {
+            "availablePowerRelation": "0.5 * rho * A_effective * |V|^3",
+            "calibratedCoefficients": false,
+            "measuredPowerCurve": false,
+            "measuredCp": false,
+            "captureProxy": {
+                "cpReference": 0.4,
+                "cpReferenceEvidence": {
+                    "evidenceClass": "EXTERNAL_REFERENCE",
+                    "sourceId": "SRC-WIND-TECH-20260714",
+                    "sourceStatement": "Technical Pitch cites 38-44% Cp for active oscillating foils under controlled conditions.",
+                    "usePolicy": "SYNTHETIC_MODEL_ANCHOR_NOT_FOILO_MEASUREMENT"
+                },
+                "cpCap": 0.44,
+                "pitchFactor": "max(0, 1 - ((pitch_deg - 15) / 20)^2)",
+                "frequencyFactor": "max(0, 1 - ((frequency_hz - 0.8) / 0.6)^2)",
+                "turbulenceFactor": "1.0",
+                "note": "Pitch/frequency optima and widths are synthetic baseline assumptions. Turbulence has no mean-performance effect in v1."
+            },
+            "conversion": {
+                "efficiencyProxy": 0.75,
+                "evidenceClass": "SYNTHETIC",
+                "note": "Combined mechanical/electrical conversion proxy; not measured."
+            },
+            "outputs": {
+                "availableFluidPowerKw": "0.5 * rho * A_effective * V^3 / 1000",
+                "captureProxy": "min(cp_cap, cp_reference * pitch_factor * frequency_factor)",
+                "mechanicalPowerProxyKw": "available_fluid_power_kw * capture_proxy",
+                "electricalPowerProxyKw": "mechanical_power_proxy_kw * conversion_efficiency_proxy",
+                "efficiencyProxy": "capture_proxy * conversion_efficiency_proxy",
+                "energyProxyKwh": "electrical_power_proxy_kw * duration_h",
+                "loadProxyN": "0.5 * rho * A_effective * V^2"
+            }
+        },
+        "baselineAssumptions": {
+            "airDensityKgM3": {
+                "value": 1.225,
+                "evidenceClass": "EXTERNAL_REFERENCE",
+                "usePolicy": "MODEL_ASSUMPTION",
+                "note": "Standard-atmosphere engineering reference, not a Foil'O measured condition."
+            },
+            "effectiveAreaM2": {
+                "value": 2,
+                "evidenceClass": "SYNTHETIC",
+                "usePolicy": "MODEL_ASSUMPTION",
+                "note": "Synthetic effective swept/capture area kept below the ~2.25 m2 experimental envelope derived from ~1.5 x 1.5 m. It is not foil geometry."
+            },
+            "conversionEfficiencyProxy": {
+                "value": 0.75,
+                "evidenceClass": "SYNTHETIC"
+            },
+            "durationH": {
+                "value": 1,
+                "evidenceClass": "SYNTHETIC"
+            }
+        },
+        "baselineRanges": {
+            "windSpeedMs": {
+                "values": [
+                    6,
+                    9,
+                    12,
+                    15,
+                    18
+                ],
+                "evidenceClass": "SYNTHETIC",
+                "note": "Exploratory study range; not a validated tunnel or operating range."
+            },
+            "pitchDeg": {
+                "values": [
+                    5,
+                    15,
+                    25
+                ],
+                "evidenceClass": "SYNTHETIC",
+                "note": "Exploratory orientable-pitch values; no validated Foil'O wind range exists."
+            },
+            "frequencyHz": {
+                "values": [
+                    0.5,
+                    0.8,
+                    1.1
+                ],
+                "evidenceClass": "SYNTHETIC",
+                "note": "Exploratory oscillation-frequency values; no validated Foil'O wind range exists."
+            }
+        },
+        "limitations": [
+            "Not calibrated to Foil'O wind-tunnel measurements.",
+            "The ~2 kW prototype reference is context-only and is not used as a performance target.",
+            "No measured Cp or wind power curve is available.",
+            "No turbulence productivity advantage is encoded in v1.",
+            "Load output is a dynamic-pressure area proxy, not a structural load prediction.",
+            "Current 90-degree inter-foil phase is recorded as source-backed baseline context but has no response term in v0.1.",
+            "Head-only yaw architecture is recorded as source-backed context but has no response term in v0.1."
+        ],
+        "constraints": {
+            "useForCommercialClaims": false,
+            "useForMeasuredClaims": false,
+            "requireSyntheticLabel": true
+        },
+        "compatibility": {
+            "appliedMachineRevision": "2026-09-21.2",
+            "sourceBackedPhaseDeg": 90,
+            "phaseResponseEffectEncoded": false,
+            "yawArchitectureEffectEncoded": false,
+            "note": "The numerical v0.1 proxy equations are unchanged. The current 90-degree phase and head-only yaw architecture are frozen as machine context/provenance, not converted into invented performance effects."
+        }
+    },
+    "study": {
+        "studyId": "STUDY-WIND-BASELINE-001",
+        "title": "Baseline synthetic Wind response model",
+        "objective": "Establish a reproducible synthetic baseline that maps declared environment/control assumptions to explicitly labeled proxy outputs before advanced statistics or ML are added.",
+        "proposedMethods": [
+            "PARAMETER_SWEEP",
+            "DESCRIPTIVE_STATISTICS",
+            "RESPONSE_STATISTICS"
+        ]
+    },
+    "campaign": {
+        "campaignId": "CAMP-WIND-BASELINE-002",
+        "objective": "Exercise the current 2026-09-21.2 Wind baseline across the existing compact synthetic wind-speed x pitch x frequency grid while recording the source-backed 90-degree inter-foil phase relation.",
+        "classification": "SYNTHETIC",
+        "inputs": {
+            "environment": {
+                "windSpeedMs": [
+                    6,
+                    9,
+                    12,
+                    15,
+                    18
+                ],
+                "airDensityKgM3": 1.225,
+                "turbulenceIntensityPct": 10
+            },
+            "machine": {
+                "effectiveAreaM2": 2
+            },
+            "control": {
+                "pitchDeg": [
+                    5,
+                    15,
+                    25
+                ],
+                "frequencyHz": [
+                    0.5,
+                    0.8,
+                    1.1
+                ],
+                "phaseDeg": 90
+            },
+            "conversion": {
+                "efficiencyProxy": 0.75
+            },
+            "experiment": {
+                "durationH": 1
+            }
+        },
+        "inputProvenance": {
+            "environment.windSpeedMs": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "Exploratory range; not measured or a validated tunnel range."
+            },
+            "environment.airDensityKgM3": {
+                "evidenceClass": "EXTERNAL_REFERENCE",
+                "note": "Standard-atmosphere engineering reference; not measured by Foil'O."
+            },
+            "environment.turbulenceIntensityPct": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "Recorded for provenance only; v1 does not alter mean performance with turbulence."
+            },
+            "machine.effectiveAreaM2": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "Synthetic effective area below the ~2.25 m2 test-envelope area; not foil geometry."
+            },
+            "control.pitchDeg": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "No validated Foil'O wind pitch range currently exists."
+            },
+            "control.frequencyHz": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "No validated Foil'O wind frequency range currently exists."
+            },
+            "conversion.efficiencyProxy": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "Combined conversion proxy; not measured."
+            },
+            "experiment.durationH": {
+                "evidenceClass": "SYNTHETIC"
+            },
+            "control.phaseDeg": {
+                "evidenceClass": "SOURCE_BACKED",
+                "sourceId": "WIND-014",
+                "note": "Current Wind inter-foil phase relation is 90 degrees. The v1 synthetic response equations record this baseline value but do not encode a phase-response effect."
+            }
+        },
+        "analyses": [
+            {
+                "module": "descriptive_statistics",
+                "enabled": true
+            },
+            {
+                "module": "response_statistics",
+                "enabled": true
+            }
+        ],
+        "outputs": {
+            "gold": true,
+            "aiBiDashboard": true,
+            "streamlitApp": true,
+            "mlflow": false
+        },
+        "safety": {
+            "measuredClaimsAllowed": false,
+            "commercialPerformanceClaimsAllowed": false,
+            "cpReferenceIsExternalLiteratureAnchor": true,
+            "turbulenceBenefitEncoded": false,
+            "phaseBaselineSourceBacked": true,
+            "phaseResponseEffectEncoded": false,
+            "yawResponseEffectEncoded": false
+        },
+        "expectedScenarioCount": 45
+    }
+}

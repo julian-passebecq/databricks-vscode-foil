@@ -1,0 +1,39 @@
+name: FOIL Test VSIX
+
+on:
+  push:
+    branches: [foil-lab-mvp]
+    paths:
+      - "packages/databricks-vscode/src/foil-lab/**"
+      - "packages/databricks-vscode/src/ui/foil-lab/**"
+      - "packages/databricks-vscode/resources/foil-lab/**"
+      - "packages/databricks-vscode/src/extension.ts"
+      - "packages/databricks-vscode/package.json"
+      - ".github/workflows/foil-package-vsix.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: yarn
+      - run: corepack enable
+      - run: yarn install --immutable
+      - name: Build extension
+        run: yarn run build
+      - name: Package FOIL test VSIX
+        working-directory: packages/databricks-vscode
+        run: yarn run package --out foil-lab-test.vsix
+      - name: Upload VSIX
+        uses: actions/upload-artifact@v4
+        with:
+          name: foil-lab-test-vsix
+          path: packages/databricks-vscode/foil-lab-test.vsix
+          if-no-files-found: error

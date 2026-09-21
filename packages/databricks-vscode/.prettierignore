@@ -9,3 +9,4 @@ extension/
 resources/python/generated/
 .venv
 *.vsix
+resources/foil-lab/snapshots/*.json

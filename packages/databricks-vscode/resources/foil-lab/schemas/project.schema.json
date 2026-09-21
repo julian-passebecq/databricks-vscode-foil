@@ -1,0 +1,68 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://foil.local/schemas/project.schema.json",
+    "title": "FOIL Virtual Lab Project",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "version",
+        "name",
+        "activeTechnology",
+        "defaultClassification",
+        "allowRealData",
+        "databricks"
+    ],
+    "properties": {
+        "version": {
+            "type": "string",
+            "minLength": 1
+        },
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "activeTechnology": {
+            "enum": ["EOLIEN", "HYDROLIEN", "PROPULSION"]
+        },
+        "defaultClassification": {
+            "enum": ["SYNTHETIC", "SANITIZED_APPROVED"]
+        },
+        "allowRealData": {
+            "const": false,
+            "description": "Free/Demo lab remains synthetic or explicitly sanitized only."
+        },
+        "databricks": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["target", "goldSchema", "labJob", "appResource"],
+            "properties": {
+                "target": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                },
+                "catalog": {
+                    "type": "string",
+                    "pattern": "^$|^[A-Za-z_][A-Za-z0-9_]*$",
+                    "description": "Unity Catalog catalog used by FOIL Gold. Empty until configured for a live workspace."
+                },
+                "goldSchema": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+                },
+                "labJob": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                },
+                "appResource": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                }
+            }
+        },
+        "controlContextFile": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional legacy local control-context path. New workflows use frozen Mongo-derived campaign snapshots instead."
+        }
+    }
+}

@@ -1,0 +1,593 @@
+{
+    "schema": "foil-lab/campaign-snapshot-v1",
+    "schemaVersion": 1,
+    "snapshotId": "SNAP-CAMP-WIND-BASELINE-001-v2",
+    "generatedAt": "2026-09-20T03:20:00+02:00",
+    "source": {
+        "database": "foil_lab",
+        "studyId": "STUDY-WIND-BASELINE-001",
+        "campaignId": "CAMP-WIND-BASELINE-001"
+    },
+    "machine": {
+        "machineId": "MACHINE-WIND-001",
+        "revision": "2026-09-20.1",
+        "technology": "EOLIEN",
+        "status": "ACTIVE",
+        "facts": [
+            {
+                "id": "WIND-002",
+                "label": "reference test-scale power",
+                "value": 2,
+                "unit": "kW",
+                "classification": "SOURCE_BACKED",
+                "databricksPolicy": "CONTEXT_ONLY"
+            },
+            {
+                "id": "WIND-003",
+                "label": "experimental envelope",
+                "value": "~1.5 x 1.5",
+                "unit": "m",
+                "classification": "SOURCE_BACKED",
+                "databricksPolicy": "CONTEXT_ONLY"
+            },
+            {
+                "id": "WIND-004",
+                "label": "target TRL",
+                "value": 5,
+                "classification": "TARGET",
+                "databricksPolicy": "DISPLAY_ONLY"
+            },
+            {
+                "id": "BIZ-001",
+                "label": "minimum program budget",
+                "value": 700000,
+                "unit": "EUR",
+                "classification": "COMPANY_STATED",
+                "databricksPolicy": "FINANCE_CONTEXT"
+            },
+            {
+                "id": "CLAIM-001",
+                "label": "disturbed/turbulent-flow productivity",
+                "value": "+5-15% current working range; earlier +5-20%",
+                "classification": "COMPANY_ESTIMATE",
+                "databricksPolicy": "UNVALIDATED_BLOCKED_AS_MEASURED"
+            },
+            {
+                "id": "CLAIM-008",
+                "label": "farm/site density",
+                "value": "conservative +25%; realistic objective +50-100%; literature up to x4",
+                "classification": "COMPANY_ESTIMATE_AND_LITERATURE_CONTEXT",
+                "databricksPolicy": "UNVALIDATED"
+            }
+        ],
+        "parameters": [
+            {
+                "id": "wind_speed",
+                "unit": "m/s",
+                "classification": "MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "air_density",
+                "unit": "kg/m3",
+                "classification": "MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "turbulence_intensity",
+                "unit": "%",
+                "classification": "MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "foil_span",
+                "unit": "m",
+                "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "foil_chord",
+                "unit": "m",
+                "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "heave_amplitude",
+                "unit": "m",
+                "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "pitch_amplitude",
+                "unit": "deg",
+                "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "frequency",
+                "unit": "Hz",
+                "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "phase",
+                "unit": "deg",
+                "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "yaw",
+                "unit": "deg",
+                "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "generator_efficiency",
+                "unit": "%",
+                "classification": "MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            },
+            {
+                "id": "availability",
+                "unit": "%",
+                "classification": "MODEL_ASSUMPTION",
+                "campaignCanOverride": true
+            }
+        ],
+        "unknowns": [
+            "validated wind power curve",
+            "measured Foil'O Wind Cp",
+            "final commercial geometry",
+            "exact foil profile/span/chord",
+            "heave/pitch/yaw amplitude ranges",
+            "machine mass/CG",
+            "ballast/mooring architecture",
+            "commercial CAPEX/OPEX",
+            "certified loads/fatigue",
+            "acoustic measurements"
+        ],
+        "controlContract": {
+            "_id": "MACHINE-WIND-001@2026-09-20.1@control-v1",
+            "kind": "lab_contract",
+            "contractVersion": "1.0",
+            "contractStatus": "CURRENT",
+            "generatedAt": "2026-09-20",
+            "machineId": "MACHINE-WIND-001",
+            "revision": "2026-09-20.1",
+            "technology": "EOLIEN",
+            "classification": "CURATED_CONTROL_SNAPSHOT",
+            "sourceHierarchy": {
+                "currentStrategy": "SRC-STRATEGY-20260917",
+                "technicalAnchor": "SRC-WIND-TECH-20260714",
+                "currentWorkingDirection": "SRC-WIND-HAMBURG-20260917",
+                "currentBusinessStatus": "SRC-WIND-FUNDING-20260820",
+                "supportingProgram": [
+                    "SRC-WIND-CITEPH-V3-20260603",
+                    "SRC-CITEPH-20260523"
+                ]
+            },
+            "sourceBackedContext": {
+                "architecture": "active oscillating bi-foil fluid-flow energy converter",
+                "referencePowerKw": {
+                    "value": 2,
+                    "qualifier": "approximately",
+                    "policy": "CONTEXT_ONLY",
+                    "factId": "WIND-002"
+                },
+                "experimentalEnvelopeM": {
+                    "value": "~1.5 x 1.5",
+                    "policy": "CONTEXT_ONLY",
+                    "factId": "WIND-003",
+                    "warning": "not final commercial geometry and not an exact span/stroke definition"
+                },
+                "targetTrl": {
+                    "value": 5,
+                    "qualifier": "approximately",
+                    "policy": "DISPLAY_ONLY",
+                    "factId": "WIND-004"
+                },
+                "architectureFeatures": [
+                    "parametric kinematics",
+                    "orientable pitch",
+                    "constructive bi-foil interaction",
+                    "natural balancing",
+                    "two-in-one mechanical conversion",
+                    "self-sustaining system",
+                    "synchronous generator",
+                    "adaptive control",
+                    "energy control"
+                ],
+                "instrumentation": ["loads", "positions", "frequency", "power"],
+                "validationPlan": [
+                    "representative conditions",
+                    "mobile pre-tests",
+                    "Pprime wind tunnel"
+                ]
+            },
+            "parameterRegistry": [
+                {
+                    "id": "wind_speed",
+                    "unit": "m/s",
+                    "classification": "MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "air_density",
+                    "unit": "kg/m3",
+                    "classification": "MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "turbulence_intensity",
+                    "unit": "%",
+                    "classification": "MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "foil_span",
+                    "unit": "m",
+                    "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "foil_chord",
+                    "unit": "m",
+                    "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "heave_amplitude",
+                    "unit": "m",
+                    "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "pitch_amplitude",
+                    "unit": "deg",
+                    "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "frequency",
+                    "unit": "Hz",
+                    "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "phase",
+                    "unit": "deg",
+                    "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "yaw",
+                    "unit": "deg",
+                    "classification": "UNKNOWN_MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "generator_efficiency",
+                    "unit": "%",
+                    "classification": "MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                },
+                {
+                    "id": "availability",
+                    "unit": "%",
+                    "classification": "MODEL_ASSUMPTION",
+                    "campaignCanOverride": true
+                }
+            ],
+            "valueLedger": [
+                {
+                    "id": "WIND-002",
+                    "label": "reference test-scale power",
+                    "value": 2,
+                    "unit": "kW",
+                    "classification": "SOURCE_BACKED",
+                    "databricksPolicy": "CONTEXT_ONLY"
+                },
+                {
+                    "id": "WIND-003",
+                    "label": "experimental envelope",
+                    "value": "~1.5 x 1.5",
+                    "unit": "m",
+                    "classification": "SOURCE_BACKED",
+                    "databricksPolicy": "CONTEXT_ONLY"
+                },
+                {
+                    "id": "WIND-004",
+                    "label": "target TRL",
+                    "value": 5,
+                    "classification": "TARGET",
+                    "databricksPolicy": "DISPLAY_ONLY"
+                },
+                {
+                    "id": "BIZ-001",
+                    "label": "minimum program budget",
+                    "value": 700000,
+                    "unit": "EUR",
+                    "classification": "COMPANY_STATED",
+                    "databricksPolicy": "FINANCE_CONTEXT"
+                },
+                {
+                    "id": "CLAIM-001",
+                    "label": "disturbed/turbulent-flow productivity",
+                    "value": "+5-15% current working range; earlier +5-20%",
+                    "classification": "COMPANY_ESTIMATE",
+                    "databricksPolicy": "UNVALIDATED_BLOCKED_AS_MEASURED"
+                },
+                {
+                    "id": "CLAIM-008",
+                    "label": "farm/site density",
+                    "value": "conservative +25%; realistic objective +50-100%; literature up to x4",
+                    "classification": "COMPANY_ESTIMATE_AND_LITERATURE_CONTEXT",
+                    "databricksPolicy": "UNVALIDATED"
+                }
+            ],
+            "knownUnknowns": [
+                "validated wind power curve",
+                "measured Foil'O Wind Cp",
+                "final commercial geometry",
+                "exact foil profile/span/chord",
+                "heave/pitch/yaw amplitude ranges",
+                "machine mass/CG",
+                "ballast/mooring architecture",
+                "commercial CAPEX/OPEX",
+                "certified loads/fatigue",
+                "acoustic measurements"
+            ],
+            "openControlItems": [
+                "CONFLICT-WIND-TURB-001",
+                "CONFLICT-WIND-DENSITY-001",
+                "CONFLICT-WIND-GEOMETRY-001",
+                "GAP-WIND-DATA-001",
+                "GAP-WIND-KINEMATICS-001",
+                "GAP-WIND-STRUCTURE-001",
+                "GAP-WIND-VALIDATION-001",
+                "GAP-WIND-ECON-001"
+            ],
+            "modelPolicy": {
+                "currentModelProfile": "wind_parametric_v1",
+                "maturity": 1,
+                "classification": "SYNTHETIC",
+                "nextProfiles": [
+                    "wind_document_calibrated_v2",
+                    "wind_windtunnel_v3"
+                ],
+                "rule": "Simulation outputs remain SYNTHETIC/MODEL_ASSUMPTION until calibrated against branch-specific Wind measurements."
+            },
+            "runtimeProvenanceRequired": [
+                "machineId",
+                "machineRevision",
+                "controlDigest",
+                "modelId",
+                "modelVersion",
+                "campaignId",
+                "studyId",
+                "scenarioId",
+                "runId",
+                "gitSha",
+                "generatedAt",
+                "resultClassification"
+            ],
+            "exportPolicy": {
+                "normalPath": "foil_control -> generated frozen JSON snapshot -> databricks-vscode-foil -> Databricks",
+                "liveMongoRequired": false,
+                "resultsStorage": "Databricks Bronze/Silver/Gold + MLflow",
+                "digestPolicy": "Compute SHA-256 over normalized exported JSON; digest not guessed inside Mongo."
+            },
+            "_foil": {
+                "schemaVersion": 1,
+                "authorityDecision": "DEC-CTRL-004",
+                "migrationMode": "atlas_canonical"
+            }
+        }
+    },
+    "model": {
+        "modelId": "wind_parametric_v1",
+        "version": "0.1",
+        "status": "READY_FOR_BASELINE",
+        "classification": "SYNTHETIC",
+        "maturityLevel": 1,
+        "purpose": "Initial parametric response model for reproducible Databricks scenario studies. Not a validated industrial digital twin.",
+        "inputs": [
+            "wind_speed",
+            "air_density",
+            "turbulence_intensity",
+            "foil_span",
+            "foil_chord",
+            "heave_amplitude",
+            "pitch_amplitude",
+            "frequency",
+            "phase",
+            "yaw",
+            "generator_efficiency"
+        ],
+        "intendedOutputs": [
+            "available_fluid_power",
+            "capture_proxy",
+            "mechanical_power_proxy",
+            "electrical_power_proxy",
+            "efficiency_proxy",
+            "energy_proxy",
+            "load_proxy"
+        ],
+        "physics": {
+            "availablePowerRelation": "0.5 * rho * A_effective * |V|^3",
+            "calibratedCoefficients": false,
+            "measuredPowerCurve": false,
+            "measuredCp": false,
+            "captureProxy": {
+                "cpReference": 0.4,
+                "cpReferenceEvidence": {
+                    "evidenceClass": "EXTERNAL_REFERENCE",
+                    "sourceId": "SRC-WIND-TECH-20260714",
+                    "sourceStatement": "Technical Pitch cites 38-44% Cp for active oscillating foils under controlled conditions.",
+                    "usePolicy": "SYNTHETIC_MODEL_ANCHOR_NOT_FOILO_MEASUREMENT"
+                },
+                "cpCap": 0.44,
+                "pitchFactor": "max(0, 1 - ((pitch_deg - 15) / 20)^2)",
+                "frequencyFactor": "max(0, 1 - ((frequency_hz - 0.8) / 0.6)^2)",
+                "turbulenceFactor": "1.0",
+                "note": "Pitch/frequency optima and widths are synthetic baseline assumptions. Turbulence has no mean-performance effect in v1."
+            },
+            "conversion": {
+                "efficiencyProxy": 0.75,
+                "evidenceClass": "SYNTHETIC",
+                "note": "Combined mechanical/electrical conversion proxy; not measured."
+            },
+            "outputs": {
+                "availableFluidPowerKw": "0.5 * rho * A_effective * V^3 / 1000",
+                "captureProxy": "min(cp_cap, cp_reference * pitch_factor * frequency_factor)",
+                "mechanicalPowerProxyKw": "available_fluid_power_kw * capture_proxy",
+                "electricalPowerProxyKw": "mechanical_power_proxy_kw * conversion_efficiency_proxy",
+                "efficiencyProxy": "capture_proxy * conversion_efficiency_proxy",
+                "energyProxyKwh": "electrical_power_proxy_kw * duration_h",
+                "loadProxyN": "0.5 * rho * A_effective * V^2"
+            }
+        },
+        "baselineAssumptions": {
+            "airDensityKgM3": {
+                "value": 1.225,
+                "evidenceClass": "EXTERNAL_REFERENCE",
+                "usePolicy": "MODEL_ASSUMPTION",
+                "note": "Standard-atmosphere engineering reference, not a Foil'O measured condition."
+            },
+            "effectiveAreaM2": {
+                "value": 2,
+                "evidenceClass": "SYNTHETIC",
+                "usePolicy": "MODEL_ASSUMPTION",
+                "note": "Synthetic effective swept/capture area kept below the ~2.25 m2 experimental envelope derived from ~1.5 x 1.5 m. It is not foil geometry."
+            },
+            "conversionEfficiencyProxy": {
+                "value": 0.75,
+                "evidenceClass": "SYNTHETIC"
+            },
+            "durationH": {
+                "value": 1,
+                "evidenceClass": "SYNTHETIC"
+            }
+        },
+        "baselineRanges": {
+            "windSpeedMs": {
+                "values": [6, 9, 12, 15, 18],
+                "evidenceClass": "SYNTHETIC",
+                "note": "Exploratory study range; not a validated tunnel or operating range."
+            },
+            "pitchDeg": {
+                "values": [5, 15, 25],
+                "evidenceClass": "SYNTHETIC",
+                "note": "Exploratory orientable-pitch values; no validated Foil'O wind range exists."
+            },
+            "frequencyHz": {
+                "values": [0.5, 0.8, 1.1],
+                "evidenceClass": "SYNTHETIC",
+                "note": "Exploratory oscillation-frequency values; no validated Foil'O wind range exists."
+            }
+        },
+        "limitations": [
+            "Not calibrated to Foil'O wind-tunnel measurements.",
+            "The ~2 kW prototype reference is context-only and is not used as a performance target.",
+            "No measured Cp or wind power curve is available.",
+            "No turbulence productivity advantage is encoded in v1.",
+            "Load output is a dynamic-pressure area proxy, not a structural load prediction."
+        ],
+        "constraints": {
+            "useForCommercialClaims": false,
+            "useForMeasuredClaims": false,
+            "requireSyntheticLabel": true
+        }
+    },
+    "study": {
+        "studyId": "STUDY-WIND-BASELINE-001",
+        "title": "Baseline synthetic Wind response model",
+        "objective": "Establish a reproducible synthetic baseline that maps declared environment/control assumptions to explicitly labeled proxy outputs before advanced statistics or ML are added.",
+        "proposedMethods": [
+            "PARAMETER_SWEEP",
+            "DESCRIPTIVE_STATISTICS",
+            "RESPONSE_STATISTICS"
+        ]
+    },
+    "campaign": {
+        "campaignId": "CAMP-WIND-BASELINE-001",
+        "objective": "Exercise the first synthetic Wind response model across a compact wind-speed x pitch x frequency grid and publish explicitly labeled proxy outputs to Gold.",
+        "classification": "SYNTHETIC",
+        "inputs": {
+            "environment": {
+                "windSpeedMs": [6, 9, 12, 15, 18],
+                "airDensityKgM3": 1.225,
+                "turbulenceIntensityPct": 10
+            },
+            "machine": {
+                "effectiveAreaM2": 2
+            },
+            "control": {
+                "pitchDeg": [5, 15, 25],
+                "frequencyHz": [0.5, 0.8, 1.1]
+            },
+            "conversion": {
+                "efficiencyProxy": 0.75
+            },
+            "experiment": {
+                "durationH": 1
+            }
+        },
+        "inputProvenance": {
+            "environment.windSpeedMs": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "Exploratory range; not measured or a validated tunnel range."
+            },
+            "environment.airDensityKgM3": {
+                "evidenceClass": "EXTERNAL_REFERENCE",
+                "note": "Standard-atmosphere engineering reference; not measured by Foil'O."
+            },
+            "environment.turbulenceIntensityPct": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "Recorded for provenance only; v1 does not alter mean performance with turbulence."
+            },
+            "machine.effectiveAreaM2": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "Synthetic effective area below the ~2.25 m2 test-envelope area; not foil geometry."
+            },
+            "control.pitchDeg": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "No validated Foil'O wind pitch range currently exists."
+            },
+            "control.frequencyHz": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "No validated Foil'O wind frequency range currently exists."
+            },
+            "conversion.efficiencyProxy": {
+                "evidenceClass": "SYNTHETIC",
+                "note": "Combined conversion proxy; not measured."
+            },
+            "experiment.durationH": {
+                "evidenceClass": "SYNTHETIC"
+            }
+        },
+        "analyses": [
+            {
+                "module": "descriptive_statistics",
+                "enabled": true
+            },
+            {
+                "module": "response_statistics",
+                "enabled": true
+            }
+        ],
+        "outputs": {
+            "gold": true,
+            "aiBiDashboard": true,
+            "streamlitApp": true,
+            "mlflow": false
+        },
+        "safety": {
+            "measuredClaimsAllowed": false,
+            "commercialPerformanceClaimsAllowed": false,
+            "cpReferenceIsExternalLiteratureAnchor": true,
+            "turbulenceBenefitEncoded": false
+        },
+        "expectedScenarioCount": 45
+    }
+}
