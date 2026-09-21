@@ -156,6 +156,7 @@ describe("compileCampaign", () => {
                 control: {
                     pitchDeg: [5, 15],
                     frequencyHz: [0.5, 0.8],
+                    phaseDeg: 90,
                 },
                 conversion: {
                     efficiencyProxy: 0.75,
@@ -204,6 +205,9 @@ describe("compileCampaign", () => {
         assert.ok(runner?.content.includes("SYNTHETIC_MODEL_OUTPUT"));
         assert.ok(runner?.content.includes("cp_reference = 0.40"));
         assert.ok(runner?.content.includes("turbulence_mean_effect_encoded"));
+        assert.ok(runner?.content.includes("phase_response_effect_encoded"));
+        assert.ok(runner?.content.includes("WIND-014_SOURCE_BACKED_BASELINE"));
+        assert.ok(runner?.content.includes('"phaseDeg":90'));
         assert.ok(
             manifest?.content.includes(
                 '"engineeringResultsGeneratedByThisStage": true'

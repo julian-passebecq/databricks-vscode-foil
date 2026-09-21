@@ -226,7 +226,7 @@ export class FoilLabManager implements Disposable {
     async importBundledBaseline(): Promise<string> {
         const snapshotPath = path.resolve(
             __dirname,
-            "../resources/foil-lab/snapshots/SNAP-CAMP-WIND-BASELINE-001-v2.json"
+            "../resources/foil-lab/snapshots/SNAP-CAMP-WIND-BASELINE-002-v1.json"
         );
         return this.importControlMachineSnapshot(snapshotPath);
     }

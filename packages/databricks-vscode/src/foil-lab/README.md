@@ -51,9 +51,11 @@ FOIL Lab import
 DAB -> Databricks
 ```
 
-The bundled test snapshot is `SNAP-CAMP-WIND-BASELINE-001-v2`, pinned to Wind control revision `2026-09-20.1`. It preserves the curated control contract (source hierarchy, value ledger, known unknowns, open control items and model policy) while the executable campaign remains small and explicitly synthetic.
+The bundled test snapshot is `SNAP-CAMP-WIND-BASELINE-002-v1`, pinned to Wind control revision `2026-09-21.2`. It preserves the curated control contract (source hierarchy, value ledger, known unknowns, open control items and model policy) while the executable campaign remains small and explicitly synthetic.
 
 Hydrolien stays `REFERENCE_ONLY`; Hydro site/performance/economic values must not become Wind defaults.
+
+The current Wind machine contract records the two-foil phase relation as **90 degrees** (`WIND-014`) and the yaw architecture as head-only rotation about the mast (`WIND-015`). The v0.1 synthetic response model records these as provenance/context only; it does not invent phase- or yaw-dependent performance terms.
 
 ## First live test path
 

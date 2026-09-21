@@ -137,7 +137,7 @@ export class FoilLabCommands {
             const target = await this.manager.importBundledBaseline();
             await this.openFile(target);
             window.showInformationMessage(
-                "Current FOIL Wind baseline imported from the bundled frozen snapshot (control revision 2026-09-20.1)."
+                "Current FOIL Wind baseline imported from the bundled frozen snapshot (control revision 2026-09-21.2; source-backed inter-foil phase 90 degrees)."
             );
         } catch (e) {
             window.showErrorMessage(

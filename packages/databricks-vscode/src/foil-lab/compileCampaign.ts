@@ -180,6 +180,14 @@ def synthetic_wind_response(parameters):
     effective_area = require_numeric(parameters, "machine.effectiveAreaM2")
     pitch_deg = require_numeric(parameters, "control.pitchDeg")
     frequency_hz = require_numeric(parameters, "control.frequencyHz")
+    phase_deg_value = parameters.get("control.phaseDeg")
+    phase_deg = None
+    if phase_deg_value is not None:
+        if isinstance(phase_deg_value, bool) or not isinstance(
+            phase_deg_value, (int, float)
+        ):
+            raise ValueError("Expected numeric campaign parameter: control.phaseDeg")
+        phase_deg = float(phase_deg_value)
     conversion_efficiency = require_numeric(
         parameters, "conversion.efficiencyProxy"
     )
@@ -226,6 +234,18 @@ def synthetic_wind_response(parameters):
         "frequency_optimum_hz": frequency_optimum_hz,
         "frequency_width_hz": frequency_width_hz,
         "turbulence_mean_effect_encoded": False,
+        "phase_deg": phase_deg,
+        "phase_source": (
+            "WIND-014_SOURCE_BACKED_BASELINE"
+            if phase_deg == 90.0
+            else (
+                "SYNTHETIC_SENSITIVITY_OR_OTHER"
+                if phase_deg is not None
+                else "NOT_PROVIDED"
+            )
+        ),
+        "phase_response_effect_encoded": False,
+        "yaw_architecture_effect_encoded": False,
         "measured_power_curve": False,
         "validated_foil_o_cp": False,
     }
